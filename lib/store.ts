@@ -191,7 +191,7 @@ export const useCollabixStore = create<CollabixState>((set, get) => ({
 
       const mockProjects: Project[] = [
         {
-          id: 'p1111111-1111-1111-1111-111111111111',
+          id: 'f1111111-1111-1111-1111-111111111111',
           workspace_id: mockWorkspace.id,
           name: 'E-Commerce Platform',
           description: 'Customer shopping interface and checkout flow redesign.',
@@ -202,7 +202,7 @@ export const useCollabixStore = create<CollabixState>((set, get) => ({
           created_at: new Date().toISOString()
         },
         {
-          id: 'p2222222-2222-2222-2222-222222222222',
+          id: 'f2222222-2222-2222-2222-222222222222',
           workspace_id: mockWorkspace.id,
           name: 'Mobile Banking App',
           description: 'Secure iOS/Android mobile banking application experience.',
@@ -213,7 +213,7 @@ export const useCollabixStore = create<CollabixState>((set, get) => ({
           created_at: new Date().toISOString()
         },
         {
-          id: 'p3333333-3333-3333-3333-333333333333',
+          id: 'f3333333-3333-3333-3333-333333333333',
           workspace_id: mockWorkspace.id,
           name: 'Analytics Dashboard',
           description: 'Business intelligence dashboard and analytics portal reporting tools.',
@@ -228,7 +228,7 @@ export const useCollabixStore = create<CollabixState>((set, get) => ({
       const mockTasks: Task[] = [
         {
           id: 't-1',
-          project_id: 'p1111111-1111-1111-1111-111111111111',
+          project_id: 'f1111111-1111-1111-1111-111111111111',
           title: 'Finalize checkout flow',
           description: 'Review checkout basket and address selection flow API schema.',
           status: 'IN_PROGRESS',
@@ -242,7 +242,7 @@ export const useCollabixStore = create<CollabixState>((set, get) => ({
         },
         {
           id: 't-2',
-          project_id: 'p2222222-2222-2222-2222-222222222222',
+          project_id: 'f2222222-2222-2222-2222-222222222222',
           title: 'Review authentication API',
           description: 'Audit secure token parameters and SSO redirect redirects.',
           status: 'TODO',
@@ -256,7 +256,7 @@ export const useCollabixStore = create<CollabixState>((set, get) => ({
         },
         {
           id: 't-3',
-          project_id: 'p3333333-3333-3333-3333-333333333333',
+          project_id: 'f3333333-3333-3333-3333-333333333333',
           title: 'Prepare dashboard QA',
           description: 'Write browser unit checking scripts.',
           status: 'IN_REVIEW',
@@ -270,7 +270,7 @@ export const useCollabixStore = create<CollabixState>((set, get) => ({
         },
         {
           id: 't-4',
-          project_id: 'p1111111-1111-1111-1111-111111111111',
+          project_id: 'f1111111-1111-1111-1111-111111111111',
           title: 'Write project documentation',
           description: 'Assemble all README, CHANGELOG and architectural files.',
           status: 'COMPLETED',

@@ -25,7 +25,7 @@ on conflict (workspace_id, name) do nothing;
 insert into public.projects (id, workspace_id, name, description, status, progress, start_date, due_date)
 values 
   (
-    'p1111111-1111-1111-1111-111111111111', 
+    'f1111111-1111-1111-1111-111111111111', 
     'e6c0c20a-8d77-4cf2-bc17-ec30a613aa11', 
     'E-Commerce Platform', 
     'Customer shopping interface and checkout flow redesign.', 
@@ -35,7 +35,7 @@ values
     current_date + interval '10 days'
   ),
   (
-    'p2222222-2222-2222-2222-222222222222', 
+    'f2222222-2222-2222-2222-222222222222', 
     'e6c0c20a-8d77-4cf2-bc17-ec30a613aa11', 
     'Mobile Banking App', 
     'Secure iOS/Android mobile banking application experience.', 
@@ -45,7 +45,7 @@ values
     current_date + interval '20 days'
   ),
   (
-    'p3333333-3333-3333-3333-333333333333', 
+    'f3333333-3333-3333-3333-333333333333', 
     'e6c0c20a-8d77-4cf2-bc17-ec30a613aa11', 
     'Analytics Dashboard', 
     'Business intelligence dashboard and analytics portal reporting tools.', 
@@ -59,9 +59,9 @@ on conflict (id) do nothing;
 -- 4. Create Project Milestones
 insert into public.project_milestones (id, project_id, title, description, due_date, is_completed)
 values
-  ('m1111111-1111-1111-1111-111111111111', 'p1111111-1111-1111-1111-111111111111', 'UI/UX Signoff', 'Finalize wireframes and flow diagrams.', current_date - interval '10 days', true),
-  ('m2222222-2222-2222-2222-222222222222', 'p1111111-1111-1111-1111-111111111111', 'Checkout Release', 'Deploy new basket and secure checkout flow.', current_date + interval '5 days', false),
-  ('m3333333-3333-3333-3333-333333333333', 'p2222222-2222-2222-2222-222222222222', 'Auth Flow Review', 'Audit login protocols and multi-factor access.', current_date + interval '8 days', false)
+  ('e1111111-1111-1111-1111-111111111111', 'f1111111-1111-1111-1111-111111111111', 'UI/UX Signoff', 'Finalize wireframes and flow diagrams.', current_date - interval '10 days', true),
+  ('e2222222-2222-2222-2222-222222222222', 'f1111111-1111-1111-1111-111111111111', 'Checkout Release', 'Deploy new basket and secure checkout flow.', current_date + interval '5 days', false),
+  ('e3333333-3333-3333-3333-333333333333', 'f2222222-2222-2222-2222-222222222222', 'Auth Flow Review', 'Audit login protocols and multi-factor access.', current_date + interval '8 days', false)
 on conflict (id) do nothing;
 
 -- 5. Create Default Channels
