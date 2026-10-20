@@ -26,9 +26,9 @@ import {
   Layers3,
   Pencil,
   Upload,
-  X,
   Copy,
   GitBranch,
+  Trash2,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -46,6 +46,7 @@ import {
   type Phase,
   type Task,
   type Role,
+  type Invitation,
 } from "./lib/types";
 interface Props {
   data: WorkspaceData;
@@ -219,6 +220,8 @@ export default function WorkspaceView({
     undefined,
   );
   const [invite, setInvite] = useState(false);
+  const [deleteInvite, setDeleteInvite] = useState<Invitation | null>(null);
+  const [editResearch, setEditResearch] = useState(false);
   const capacity = workspaceCapacity(members);
   const [view, setView] = useState("board");
   const [status, setStatus] = useState("All statuses");
@@ -942,6 +945,20 @@ export default function WorkspaceView({
               </Button>
             ) : undefined,
           )}
+          <section className="panel team-research">
+            <div className="panel-heading">
+              <div>
+                <span className="eyebrow">RESEARCH TITLE</span>
+                <h2>{w.research_title || "Add your research title"}</h2>
+                <p>{w.name}</p>
+              </div>
+              {leader && (
+                <Button variant="outline" disabled={busy} onClick={() => setEditResearch(true)}>
+                  <Pencil size={14} /> Edit research title
+                </Button>
+              )}
+            </div>
+          </section>
           <div className="member-grid">
             {members.map((m) => (
               <section className="panel member-card" key={m.user_id}>
@@ -1010,17 +1027,20 @@ export default function WorkspaceView({
               </section>
             ))}
           </div>
-          {leader && invitations.length > 0 && (
+          {leader && (
             <section className="panel invite-list">
               <div className="panel-heading">
                 <div>
                   <h2>Workspace invitations</h2>
                   <p>
-                    Links are email-bound and expire after seven days. Share
-                    them directly.
+                    All invitees, including pending, accepted and expired invitations.
+                    Deleting an invitation does not remove an existing member.
                   </p>
                 </div>
               </div>
+              {invitations.length === 0 && (
+                <Empty title="No invitations yet">Invite a teammate to generate a secure, email-bound link.</Empty>
+              )}
               {invitations.map((i) => (
                 <div className="invitation-row" key={i.id}>
                   <div>
@@ -1031,10 +1051,10 @@ export default function WorkspaceView({
                         ? "Accepted"
                         : new Date(i.expires_at) < new Date()
                           ? "Expired"
-                          : `Expires ${new Date(i.expires_at).toLocaleDateString()}`}
+                          : `Pending · Expires ${new Date(i.expires_at).toLocaleDateString()}`}
                     </small>
                   </div>
-                  {!i.accepted_at && (
+                  {!i.accepted_at && new Date(i.expires_at) > new Date() && (
                     <>
                       <Button
                         variant="outline"
@@ -1050,25 +1070,16 @@ export default function WorkspaceView({
                         <Copy size={14} />
                         {copied === i.id ? "Copied" : "Copy link"}
                       </Button>
-                      <button
-                        className="icon-button"
-                        aria-label={`Revoke invitation for ${i.email}`}
-                        disabled={busy}
-                        onClick={() =>
-                          void mutate(async () => {
-                            check(
-                              await supabase
-                                .from("rf_workspace_invitations")
-                                .delete()
-                                .eq("id", i.id),
-                            );
-                          }, "Invitation revoked")
-                        }
-                      >
-                        <X size={16} />
-                      </button>
                     </>
                   )}
+                  <Button
+                    variant="destructive"
+                    aria-label={`Delete invitation for ${i.email}`}
+                    disabled={busy}
+                    onClick={() => setDeleteInvite(i)}
+                  >
+                    <Trash2 size={14} /> Delete
+                  </Button>
                 </div>
               ))}
             </section>
@@ -1391,6 +1402,40 @@ export default function WorkspaceView({
             </p>
             <Button disabled={busy}>Save phase</Button>
           </form>
+        </Modal>
+      )}
+      {editResearch && leader && (
+        <Modal title="Edit research title" onClose={() => setEditResearch(false)}>
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            const title = String(new FormData(e.currentTarget).get("research_title") || "").trim();
+            if (!title) return;
+            void mutate(async () => {
+              check(await supabase.from("rf_workspaces").update({ research_title: title }).eq("id", w.id).select("id").single());
+              setEditResearch(false);
+            }, "Research title saved");
+          }}>
+            <label>
+              Research title
+              <input name="research_title" required pattern={".*\\S.*"} maxLength={300} defaultValue={w.research_title} />
+            </label>
+            <Button type="submit" disabled={busy}>Save research title</Button>
+          </form>
+        </Modal>
+      )}
+      {deleteInvite && leader && (
+        <Modal
+          title="Delete workspace invitation?"
+          description={`Delete the invitation for ${deleteInvite.email}? An unused link will stop working. Existing workspace members will keep their access.`}
+          onClose={() => setDeleteInvite(null)}
+        >
+          <div className="member-actions">
+            <Button variant="outline" disabled={busy} onClick={() => setDeleteInvite(null)}>Cancel</Button>
+            <Button variant="destructive" disabled={busy} onClick={() => void mutate(async () => {
+              check(await supabase.from("rf_workspace_invitations").delete().eq("workspace_id", w.id).eq("id", deleteInvite.id).select("id").single());
+              setDeleteInvite(null);
+            }, "Invitation deleted")}>Delete invitation</Button>
+          </div>
         </Modal>
       )}
       {invite && (

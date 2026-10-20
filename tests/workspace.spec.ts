@@ -1,25 +1,41 @@
 import { test, expect } from '@playwright/test'
 
 // Isolated UI contract fixtures; production always uses Supabase. Live RLS tests are in SQL.
-for (const mode of ['normal', 'full', 'team-full', 'supervisor-full']) {
+for (const mode of ['normal', 'full', 'team-full', 'supervisor-full', 'viewer']) {
 const full = mode === 'full';
 test(mode !== 'normal' ? `${mode} workspace enforces separate team and supervisor places` : 'workspace navigation, task creation and branding on desktop and mobile', async ({ page }) => {
  const userId='11111111-1111-4111-8111-111111111111', workspaceId='22222222-2222-4222-8222-222222222222'
  let workspace={id:workspaceId,name:'Applied Intelligence Lab',research_title:'Forecasting for better retail decisions',institution:'Research University',department:'Computing',programme:'Applied research',supervisor_details:'',description:'Exploring practical forecasting with a shared research plan.',logo_path:null,accent_color:'#168e88',start_date:null,deadline:'2027-02-15',created_by:userId}
- const member={user_id:userId,role:'leader',responsibilities:'',rf_profiles:{full_name:'Test Researcher',skills:'Machine learning'}}
+ const member={user_id:userId,role:mode==='viewer'?'member':'leader',responsibilities:'',rf_profiles:{full_name:'Test Researcher',skills:'Machine learning'}}
+ let invitations = ['pending', 'accepted', 'expired'].map((status, i) => ({id:`invite-${i}`,email:`${status}@example.invalid`,role:'member',token:`token-${i}`,expires_at:new Date(Date.now()+(status==='expired'?-86400000:86400000)).toISOString(),accepted_at:status==='accepted'?new Date().toISOString():null}))
  const phase={id:'33333333-3333-4333-8333-333333333333',workspace_id:workspaceId,name:'Literature Review',description:'Build a grounded understanding of existing work.',objectives:'Compare reproducible forecasting approaches.',start_date:null,deadline:'2026-11-15',owner_id:userId,position:0,status:'In Progress',review_state:'Not requested'}
  const tasks: Record<string, unknown>[]=[]
  await page.addInitScript(({userId})=>{const project='mephxqyntqqoxfnygavy';localStorage.setItem(`sb-${project}-auth-token`,JSON.stringify({access_token:'test.ui.contract',refresh_token:'test-refresh',token_type:'bearer',expires_at:Math.floor(Date.now()/1000)+3600,user:{id:userId,email:'ui-test@example.invalid',aud:'authenticated',role:'authenticated',user_metadata:{full_name:'Test Researcher'}}}))},{userId})
  await page.route('https://*.supabase.co/**',async route=>{
   const req=route.request();const path=new URL(req.url()).pathname;const method=req.method();let result:unknown=[]
   if(path.includes('/rf_workspaces')){if(method==='PATCH')workspace={...workspace,...req.postDataJSON()};result=[workspace]}
-  else if(path.includes('/rf_workspace_members'))result=Array.from({length:full?7:mode==='team-full'?6:mode==='supervisor-full'?2:1},(_,i)=>({...member,user_id:i===0?userId:`member-${i}`,role:i===0?'leader':(full&&i===6)||(mode==='supervisor-full'&&i===1)?'supervisor':'member',rf_profiles:{...member.rf_profiles,full_name:i===0?'Test Researcher':`Team Member ${i}`}}))
+  else if(path.includes('/rf_workspace_invitations')) {
+   if(method==='DELETE') {
+    const params=new URL(req.url()).searchParams
+    expect(params.get('workspace_id')).toBe(`eq.${workspaceId}`)
+    const id=params.get('id')?.replace('eq.','')
+    invitations=invitations.filter(i=>i.id!==id);result={id}
+   } else result=invitations
+  }
+  else if(path.includes('/rf_workspace_members'))result=Array.from({length:full?7:mode==='team-full'?6:mode==='supervisor-full'?2:1},(_,i)=>({...member,user_id:i===0?userId:`member-${i}`,role:i===0?member.role:(full&&i===6)||(mode==='supervisor-full'&&i===1)?'supervisor':'member',rf_profiles:{...member.rf_profiles,full_name:i===0?'Test Researcher':`Team Member ${i}`}}))
   else if(path.includes('/rf_research_phases'))result=[phase]
   else if(path.includes('/rf_tasks')){if(method==='POST')tasks.unshift({...req.postDataJSON(),id:'44444444-4444-4444-8444-444444444444',status:'To Do',archived:false,created_at:new Date().toISOString(),updated_at:new Date().toISOString()});if(method==='PATCH')Object.assign(tasks[0],req.postDataJSON());result=tasks}
   else if(path.includes('/auth/v1/user'))result={id:userId,email:'ui-test@example.invalid'}
   await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(result)})
  })
  await page.goto('/dashboard');await expect(page.getByRole('heading',{name:'Let’s make progress, Test.'})).toBeVisible();await expect(page.getByRole('heading',{name:workspace.research_title})).toBeVisible()
+ if(mode === 'viewer') {
+  await page.getByRole('link',{name:test.info().project.name==='mobile'?'Team':'Team members',exact:true}).last().click()
+  await expect(page.getByRole('heading',{name:workspace.research_title})).toBeVisible()
+  await expect(page.getByRole('button',{name:'Edit research title'})).toHaveCount(0)
+  await expect(page.getByRole('heading',{name:'Workspace invitations'})).toHaveCount(0)
+  return
+ }
  if(mode !== 'normal') {
   await page.getByRole('link',{name:test.info().project.name==='mobile'?'Team':'Team members',exact:true}).last().click()
   if(full) {
@@ -38,6 +54,24 @@ test(mode !== 'normal' ? `${mode} workspace enforces separate team and superviso
  const mobile=test.info().project.name==='mobile';await page.getByRole('link',{name:/^Tasks/}).last().click();await expect(page.getByRole('heading',{name:'Compare forecasting baselines'})).toBeVisible()
  await page.getByLabel('Status for Compare forecasting baselines').selectOption('In Progress');await expect(page.getByLabel('Status for Compare forecasting baselines')).toHaveValue('In Progress')
  await page.screenshot({path:`test-results/tasks-${test.info().project.name}.png`,fullPage:true})
+ await page.getByRole('link',{name:mobile?'Team':'Team members',exact:true}).last().click()
+ for(const status of ['pending','accepted','expired'])await expect(page.getByText(`${status}@example.invalid`,{exact:true})).toBeVisible()
+ await page.getByRole('button',{name:'Edit research title',exact:true}).click()
+ await page.getByLabel('Research title',{exact:true}).fill('A shared research title')
+ await page.getByRole('button',{name:'Save research title'}).click()
+ await expect(page.getByRole('heading',{name:'A shared research title',exact:true})).toBeVisible()
+ expect(workspace.research_title).toBe('A shared research title')
+ await page.getByRole('button',{name:'Delete invitation for pending@example.invalid',exact:true}).click()
+ await page.getByRole('button',{name:'Cancel',exact:true}).click()
+ await expect(page.getByText('pending@example.invalid',{exact:true})).toBeVisible()
+ for(const status of ['accepted','expired','pending']) {
+  await page.getByRole('button',{name:`Delete invitation for ${status}@example.invalid`,exact:true}).click()
+  await page.getByRole('button',{name:'Delete invitation',exact:true}).click()
+  await expect(page.getByText(`${status}@example.invalid`,{exact:true})).toHaveCount(0)
+ }
+ await expect(page.getByRole('heading',{name:'No invitations yet'})).toBeVisible()
+ await expect(page.getByRole('heading',{name:'Test Researcher (you)'})).toBeVisible()
+ await page.screenshot({path:`test-results/team-${test.info().project.name}.png`,fullPage:true})
  if(mobile)await page.getByRole('button',{name:'Open navigation'}).click();await page.getByRole('link',{name:'Settings',exact:true}).click();await page.getByLabel('Team name',{exact:true}).fill('A renamed research team');await page.getByRole('button',{name:'Save workspace settings'}).click();await expect(page.getByRole('status')).toContainText('Workspace settings saved')
  expect(workspace.name).toBe('A renamed research team');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true)
 })

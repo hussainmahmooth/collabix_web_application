@@ -1623,6 +1623,16 @@ footer strong {
 .invite-list {
   margin-top: 25px;
 }
+.team-research {
+  margin-bottom: 24px;
+}
+.team-research .panel-heading {
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.team-research h2 {
+  overflow-wrap: anywhere;
+}
 .invitation-row {
   display: flex;
   align-items: center;
@@ -2276,6 +2286,10 @@ footer strong {
   .invitation-row {
     padding: 15px;
     gap: 6px;
+    flex-wrap: wrap;
+  }
+  .invitation-row > div {
+    flex-basis: 100%;
   }
   .invitation-row strong {
     font-size: 11px;
