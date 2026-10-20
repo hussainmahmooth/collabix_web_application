@@ -13,5 +13,13 @@
 
 ## Acceptance checks not yet completed
 
+## Hosting verification
+
+GitHub implementation commit: `90ae64d50c7fa1ae87709ebd0c1166c5e55a37b9`. Netlify detected Vite and published the SPA with one redirect and one security-header rule. Root, dashboard, registration and reset URLs returned HTTP 200, `X-Frame-Options: DENY` and `X-Content-Type-Options: nosniff`.
+
+Live browser checks caught missing Supabase configuration in the first build. The account connector had reported successful environment creation in the `all` context without persisting those variables. Recreating them explicitly in `production` succeeded and was confirmed by reading back the variable names, contexts and scopes. A follow-up Git deployment applies that environment correction; final live results are recorded after it publishes.
+
+## Outstanding acceptance
+
 Real mailbox signup verification/reset delivery, Supabase production redirect allowlist and SMTP provider configuration, a real two-account browser acceptance exercise, private logo access with real browser sessions, independent accessibility/penetration testing, backups and operational monitoring. No production-readiness claim is made.
 

@@ -20,6 +20,6 @@ In Authentication → URL Configuration set Site URL to `https://teamprojectcoll
 
 `npm run build`, publish `dist`, Node 22, SPA rewrite to `index.html`. `netlify.toml` contains these settings and security headers. Remove an explicitly installed Next.js build plugin in Netlify if an old UI-level plugin causes the Vite build to fail. The repository no longer depends on Next.js.
 
-Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` as build environment variables. Both were configured on this Netlify site through the account connector. Never use service-role credentials. `.netlify` is ignored if CLI linking is used. Git continuous deployment is preferred so the live site and GitHub source match.
+Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` as build environment variables. Both were configured and read back in the **production** context through the account connector. The connector's initial `all` context requests reported success without persisting the new variables, so production-context creation was required. Configure other contexts separately before enabling previews. Never use service-role credentials. `.netlify` is ignored if CLI linking is used. Git continuous deployment keeps the live site and GitHub source matched.
 
 After publication, verify HTTPS, root and deep URLs, security headers, JS/CSS assets, login UI and responsive layout. Complete real-email user acceptance before relying on this for confidential research. Track executed checks in `VALIDATION.md`.
