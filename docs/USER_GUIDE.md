@@ -4,6 +4,8 @@
 2. Create a workspace with your team name and research title. You become its leader. Seven default phases are created; customize them for your discipline.
 3. Open **Settings** to edit your team name, institution, programme, supervisor details, dates, description, accent and logo. ResearchFlow and the developer credit remain permanent.
 4. Open **Team members**, create an invitation for an exact email address, copy the generated link and share it yourself. The recipient signs in using that verified email, then clicks **Join workspace**. Links expire after seven days. Invitations do not send an automated email.
+
+   Each team has six places in total, including the leader and any supervisors. The team page shows the number filled. When full, remove an existing member to make room; pending links cannot exceed this limit when accepted.
 5. Create tasks with an owner, phase, priority, due date and estimated hours. Use filters, search and board/list views. Members change their assigned tasks to In Progress, Blocked or In Review. A leader completes the task after reviewing the work. Archive is reversible from the archive view.
 6. Edit phases to set dates, owners and objectives. Phase progress reflects non-archived completed tasks; phase status is a separate leader setting.
 7. The dashboard shows real task counts, upcoming work, per-owner task completion and the latest recorded workspace activity. Empty workspaces start at 0%. Activity counts are not scientific evidence of contribution.

@@ -17,6 +17,8 @@ Vitest covers progress exclusions, overdue date rules, initials, the permanent c
 
 `supabase/tests/isolation.sql` covers cross-team reads, email-bound invitation rejection/acceptance, role escalation through direct writes and RPCs, unauthorized task creation, member status updates, rejection of self approval/detail changes, leader approval, audit creation, founding leader protection and foreign-team relationships. All fixtures roll back.
 
+`supabase/tests/member_limit.sql` checks that six people can join (including leader and supervisor), the seventh is rejected, full teams cannot create invitations, rejected acceptance does not consume the link, removing a member permits a replacement, and another workspace has independent capacity. All fixtures roll back. Browser tests also verify the full-team message and disabled invite button at desktop and mobile sizes.
+
 ## Manual acceptance still required
 
 - Register two real email accounts, receive verification emails, sign in, reset password via delivered email, and sign out.

@@ -21,5 +21,11 @@ Verified production deployment: `6ad73c71c3f1e01ad85149a6`, Git commit `6797e485
 
 ## Outstanding acceptance
 
+## Six-member limit update
+
+Applied migration `20261020101209_six_member_workspace_limit`. Live transactional capacity tests passed for six memberships including leader/supervisor, rejecting the seventh, full-team invitation rejection, preserving a rejected link, freeing/reusing a place, and independent workspace capacity. Typecheck, lint and production build passed; all four workspace browser checks passed on desktop and mobile, including the disabled full-team invitation control. All database fixtures were rolled back.
+
+## Remaining acceptance checks
+
 Real mailbox signup verification/reset delivery, Supabase production redirect allowlist and SMTP provider configuration, a real two-account browser acceptance exercise, private logo access with real browser sessions, independent accessibility/penetration testing, backups and operational monitoring. No production-readiness claim is made.
 

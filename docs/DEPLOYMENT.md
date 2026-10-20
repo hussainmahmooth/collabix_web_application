@@ -10,7 +10,7 @@ Use Node 22 or newer, `npm ci`, copy `.env.example` to `.env.local`, set the Sup
 
 ## Database
 
-The migration in `supabase/migrations/20261020093304_researchflow_mvp1.sql` has been applied to the connected cloud project. Do not replay it there. On a fresh project, apply it once using Supabase migrations/SQL editor. `supabase/schema.sql` is the same readable snapshot. Run the transactional SQL tests and advisors afterward.
+Migrations in `supabase/migrations/` have been applied to the connected cloud project. Do not replay them there. On a fresh project, apply each once in filename order using Supabase migrations/SQL editor. `supabase/schema.sql` is a consolidated readable snapshot. The follow-up migration enforces the six-member workspace limit. Run the transactional SQL tests and advisors afterward.
 
 ## Supabase Auth configuration required
 

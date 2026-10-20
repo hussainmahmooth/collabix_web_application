@@ -14,6 +14,8 @@ All new public tables use an `rf_` prefix because this Supabase project already 
 
 The `rf_private` schema contains non-exposed definer helpers with explicit identity checks and empty search paths. Three public security-invoker RPC wrappers expose guarded operations. No anonymous grants exist on ResearchFlow data. Indexes cover membership user lookup, workspace tasks, phases, invitations and audit chronology. See migration SQL for executable constraints, grants and RLS policies.
 
+Admission triggers enforce a maximum of six accepted memberships per workspace across all roles. They lock the workspace row before counting to serialize concurrent admissions. Invitation creation checks current capacity; acceptance checks again through the membership trigger. Pending invitations do not reserve places. Removing a member frees a place.
+
 `researchflow-logos` is a private 2 MB PNG/JPEG/WebP bucket. Paths start with workspace UUID and use a fresh UUID per upload. Members can read their own workspace logo using expiring signed URLs; leaders can insert. Overwrite/delete policies are intentionally absent.
 
 ## Planned normalized additions — no tables or UI yet

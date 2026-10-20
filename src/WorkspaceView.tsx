@@ -932,11 +932,11 @@ export default function WorkspaceView({
           {heading(
             "BETTER QUESTIONS. SHARED DISCOVERIES.",
             "Meet the minds behind the research.",
-            `${members.length} people, one shared direction.`,
+            `${members.length} of 6 places filled. Leaders and supervisors count toward the limit.`,
             leader ? (
-              <Button onClick={() => setInvite(true)}>
+              <Button disabled={members.length >= 6} onClick={() => setInvite(true)}>
                 <Plus size={17} />
-                Invite teammate
+                {members.length >= 6 ? "Team full (6/6)" : "Invite teammate"}
               </Button>
             ) : undefined,
           )}
@@ -1434,8 +1434,10 @@ export default function WorkspaceView({
             <p className="form-hint">
               An invitation link will be generated. Share it with this person
               directly. They must sign in with this verified email address.
+              Each workspace has six places, including leaders and supervisors.
+              Pending invitations do not reserve places.
             </p>
-            <Button disabled={busy}>
+            <Button disabled={busy || members.length >= 6}>
               Create invitation <ArrowUpRight size={16} />
             </Button>
           </form>
