@@ -18,4 +18,9 @@ The owner authorized MVP 2 after MVP 1 deployment. MVP 2 extends the existing ap
 
 MVP 2 implements private documents/versioning first, followed by persisted Realtime discussions, meetings/action conversion, academic reviews, announcements, activity history and dashboard integration. `MVP2_DESIGN.md` records the design; `MVP2_COMPLETION_REPORT.md` records actual results.
 
-Later scope: task comments/checklists/dependencies and multiple assignees, dataset registry, paper authoring tracking, notifications, weekly PDF reports, evidence-based contribution metrics and manual GitHub evidence links. GitHub OAuth/webhooks remain a separate authenticated integration.
+MVP 3 implements dataset registry, paper tracking, in-app notifications, analytics, PDF reports and manual GitHub links. Task comments/checklists/dependencies and multiple assignees remain later scope. GitHub OAuth/webhooks remain a separate authenticated integration.
+
+## MVP 3 release
+Incremental extension: inspect existing entities → papers/section review → dataset ACL/governance → personal notifications → analytics → PDFs → manual GitHub links → timeline/integration → SQL/unit/browser/security checks → Cloudflare release. See `MVP3_DESIGN.md` and `MVP3_COMPLETION_REPORT.md` for actual results.
+
+Follow-up scope remains task checklists/dependencies/multiple assignees, scheduled/outbound notifications, rich mention authoring, authenticated GitHub synchronization, a collaborative word processor, operational retention/orphan maintenance, full accessibility/load testing and institutional acceptance. Do not infer contribution or research quality from activity counts.

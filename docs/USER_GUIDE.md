@@ -39,4 +39,19 @@ Leaders submit milestones; version authors and leaders submit document versions.
 
 Leaders publish/edit/archive announcements, set priority, pin them and attach private files. Members can mark announcements as read. The dashboard includes recent announcements, pending reviews, upcoming meetings, unread discussion counts and recent activity. **Activity history** filters by member, event type and date, showing the latest 200 matching metadata events. It never displays private document contents or message bodies.
 
-On phones, use **Open navigation** to reach the new modules. Reports, datasets, paper authoring sections, outbound notifications and GitHub evidence integration remain future scope.
+On phones, use **Open navigation** to reach the new modules. MVP 3 modules are described below; outbound notifications and authenticated GitHub synchronization remain future scope.
+
+## MVP 3
+**Research Papers:** leaders create papers, select authors and use Move up for author order. Set the corresponding author, supervisor, venue and dates. Leaders customize and assign the default 14-section outline. Assigned members write notes and link a draft version uploaded in Documents. Use Supervisor Review to request a decision; supervisors use Feedback & history. Editing resets approval. Import CSV headers `authors,title,year,venue,url,notes`, or export CSV/BibTeX. BibTeX import and word processing are not included.
+
+**Datasets:** leaders configure confidentiality, readers and permission. Record actual evidence, scope, provenance, dates, dictionary, quality findings, phase and retention. Registration is not processing permission. Evidence can precede approval; raw files require Granted permission and active retention/status. Versions & governance shows private snapshots and issuance history. External providers still control external files. Keep customer details out of titles and dashboard summaries.
+
+**Notifications:** the header bell and full page show your personal inbox and preferences. Deadline notices refresh while the app is open. No email, SMS or push notification delivery is configured. Discussion mention recognition supports explicit `@{member-UUID}` tokens; a rich mention picker is not included.
+
+**Analytics:** task metrics use tasks created in the chosen date range, with member/phase/status filters. The page labels workspace-wide summaries and applicable activity/action filters. Empty denominators are unavailable, not misleading percentages. Charts have table alternatives.
+
+**Reports:** choose one of eight types and a reporting period. Individual reports need a member, phase reports need a phase, and weekly/monthly reports need both dates. PDFs use configured branding/institution details, optional PNG/JPEG logos and fixed attribution. Paper reports show the current outline and dated feedback. Dataset reports exclude raw file bytes.
+
+**GitHub Tracking:** leaders register `https://github.com/owner/repository`; members link issue, PR, commit or branch URLs to tasks. Task details shows related links. No API token or synchronization is needed or claimed.
+
+**Research Timeline:** the workspace selector switches independent projects. Filter dates or papers; entries reuse existing phases/milestones, paper submission/publication dates, section-review deadlines and dataset checkpoints. Unset dates are omitted. On phones, scroll the navigation menu to reach all modules.

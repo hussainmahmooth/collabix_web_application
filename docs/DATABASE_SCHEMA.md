@@ -35,8 +35,17 @@ Admission triggers enforce six team memberships (leaders included) plus one supe
 
 New writes use `rf_collaborate`; SELECT policies use current database membership and restricted-document ACLs. Storage cleanup only permits the original uploader's unregistered objects and never bypasses registered-file access. The three MVP 2 migration filenames match the applied cloud migration history. See the migration files and consolidated `schema.sql` for executable definitions.
 
-## Future additions
+## MVP 3 design baseline (implemented below)
 
 MVP 3: datasets, paper_sections, notifications, github_links. Dataset sensitivity and ethics status must constrain access; notifications must be per recipient; paper drafts must not invent references; GitHub links initially store manual evidence URLs. Sensitive content needs private storage policies and audit coverage when introduced.
 
 The current single task assignee is explicit; a many-to-many assignment table is deferred. Existing Collabix tables are not reused by ResearchFlow.
+
+## MVP 3 implemented tables
+- `rf_papers`, `rf_paper_sections`, `rf_paper_feedback`, `rf_references`: paper metadata, ordered author/assignee UUID arrays checked against membership, outlines, existing task/document-version links and immutable decisions/comments.
+- `rf_datasets`, `rf_dataset_versions`, `rf_dataset_changes`, `rf_dataset_access_events`: bounded governance/quality metadata, classification/permission/readers, immutable file/external versions, private before/after snapshots and issuance logs.
+- `rf_notifications`, `rf_notification_preferences`: recipient/event uniqueness, personal reads and per-workspace category preferences.
+- `rf_github_repositories`, `rf_github_links`: validated repository/type/task/member relationships for manual evidence.
+- `rf_report_events`: personal export initiation without exported contents.
+
+Every public table has RLS, workspace indexes and revoked direct browser DML; composite foreign keys prevent foreign-team links. The private expiring issuance-grant table is retained internally but no Storage client read policy consumes it. Only the authenticated Edge Function signs dataset bytes. Dataset history starts when its migration is installed; earlier snapshots are not fabricated. The four MVP 3 migrations and `supabase/tests/mvp3.sql` are the executable specification.

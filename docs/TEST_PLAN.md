@@ -39,3 +39,12 @@ See `VALIDATION.md` for executed results, separated from planned checks. A passi
 - Existing auth/workspace/capacity regression tests remain required. UI fixture tests do not prove backend authorization; SQL and live tests provide that evidence.
 
 Record final actual results in `MVP2_COMPLETION_REPORT.md`. Human screen-reader/Safari acceptance, SMTP inbox delivery and long-running operational/load tests remain manual checks.
+
+## MVP 3 coverage
+`supabase/tests/mvp3.sql` runs transactionally rolled-back assignment/review/draft-link, immutable history, dataset ACL/permission/storage/revocation, notification generation/dedup/read/preferences, GitHub URL, report membership and cross-workspace checks. Run alongside the three existing SQL suites.
+
+`src/research/model.test.ts` covers task/section denominators, filters, malicious GitHub URLs, CSV quoting/import boundaries, formula/BibTeX escaping and all eight A4 report definitions. `tests/mvp3.spec.ts` covers leader/member/supervisor workflows, routes, real browser PDF downloads, mobile/footer behavior and a nine-page stress report. API responses are synthetic fixtures in browser tests; those tests do not replace RLS tests.
+
+`scripts/test-mvp3-live.mjs` uses only disposable confirmed identities and individual passwords, sends no emails, and checks real Realtime delivery, private bytes/versioning, denied direct/outsider/anonymous/revoked access, server-enforced expiry/content and issuance logging. Registered byte cleanup requires privileged Storage API access, followed by metadata/account cleanup and zero-residue verification.
+
+Run typecheck, lint, unit tests, production build and full Playwright regression. Render PDF pages, check A4 dimensions and repeated headers/footers and inspect long tables. Windows sandbox temporary-file restrictions can require approved test-runner escalation. Record real outcomes and initial failures/fixes in the completion report.

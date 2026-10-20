@@ -17,7 +17,7 @@ Static hosting sends CSP, frame denial, MIME-sniffing prevention, referrer and p
 - Email delivery, SMTP, email confirmation enforcement, redirect allowlist, abuse protection, leaked-password protection, backup/retention and operational monitoring must be checked in Supabase before a broad production rollout.
 - Auth logs previously confirmed `over_email_send_rate_limit`. Brevo SMTP was subsequently configured, its login corrected, and a real password-reset API request succeeded. Inbox delivery still requires recipient confirmation. Client retry controls do not raise server quotas; email verification remains enabled.
 - No independent penetration test, compliance certification or production-readiness claim is made.
-- MVP 2 adds document permissions and review evidence. Confidential dataset governance and notification delivery remain future scope.
+- MVP 2 adds document permissions and review evidence. MVP 3 adds confidential dataset governance and in-app notifications; outbound channels remain future scope.
 
 Run `supabase/tests/isolation.sql` as postgres. It creates synthetic accounts inside one transaction, executes checks as `authenticated`, tests ID/role boundaries and rolls everything back. Do not remove RLS to troubleshoot client errors.
 
@@ -34,3 +34,12 @@ Short-lived signed URLs expire after 60 seconds; revoking membership or ACL prev
 The security advisor reported no new MVP 2 table/function warnings. Existing legacy trigger and Auth leaked-password-protection findings remain documented and unchanged per the owner's prior instruction. This is not an independent penetration test or compliance certification.
 
 Existing advisor references: [mutable search path](https://supabase.com/docs/guides/database/database-linter?lint=0011_function_search_path_mutable), [anonymous definer execution](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable), [authenticated definer execution](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable), and [leaked-password protection](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
+
+## MVP 3 authorization and privacy
+Independent academic section decisions require a supervisor, a submitted section and a reviewer who is not the paper creator, section assignee or linked draft's original creator/author. Current membership rows, never editable Auth metadata, authorize operations. Dataset metadata, snapshots and versions share a current-membership/reader predicate; leader, supervisor, creator, assigned researcher and explicitly allowed readers may access restricted entries.
+
+Dataset Storage has no authenticated SELECT/signing policy. The Edge Function verifies the real Auth user, caller-scoped workflow/RLS permission, permission state, retention and status before signing an authorized DB path for 60 seconds. The browser cannot choose a longer expiry. Already-issued URLs last until expiry; downloaded copies cannot be revoked. External hosts enforce their own permissions and expiry. Access logs record authorization/link issuance, not proof of bytes consumed or every reuse.
+
+Notifications contain generic summaries without private research contents and cannot be forged by browser writes. Users change only their own reads/preferences. Paper notes are workspace-shared even if a linked draft is restricted. Reports load fresh authorized rows and run locally; raw dataset bytes are excluded. CSV formula prefixes and BibTeX control syntax are escaped. GitHub links accept only validated HTTPS GitHub types; no tokens are collected.
+
+File MIME/size/extension checks are not antivirus or automated data classification. Registry entries and Granted labels are not legal permission. Failed dataset registrations can leave an orphan needing privileged Storage API cleanup; retention/orphan purge is not scheduled. An empty Storage removal response does not prove bytes were deleted. Legacy Auth warnings remain unchanged by owner choice.

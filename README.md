@@ -2,7 +2,7 @@
 
 Research collaboration and project management. Developed by Micro Biz Tek.
 
-This repository contains ResearchFlow MVP 1 and MVP 2, built with React/TypeScript/Vite. The previous Collabix Next.js implementation is preserved in `legacy/` and excluded from the active build. Existing Supabase data is preserved; ResearchFlow tables use `rf_` prefixes.
+This repository contains ResearchFlow MVP 1, MVP 2 and MVP 3, built with React/TypeScript/Vite. The previous Collabix Next.js implementation is preserved in `legacy/` and excluded from the active build. Existing Supabase data is preserved; ResearchFlow tables use `rf_` prefixes.
 
 ## Run locally
 
@@ -31,9 +31,9 @@ Use Node 22+. Run `npm ci`, copy `.env.example` to `.env.local`, set your Supaba
 
 ## Deployment and review gate
 
-The existing Netlify site is https://teamprojectcolla.netlify.app, linked to this repository's `master` branch. Build settings are in `netlify.toml`. See `docs/DEPLOYMENT.md` for Auth redirect/SMTP configuration and setup details.
+Primary hosting is https://researchflow-collabix.pages.dev on Cloudflare Pages, linked to the existing GitHub master branch; release commits skip Netlify deployment. See `docs/DEPLOYMENT.md` for Auth redirect/SMTP configuration and setup details.
 
-Dataset registry, paper authoring management, notification delivery, PDF reports, task checklists/dependencies/multiple assignees and GitHub evidence integration remain future scope. Invitation emails are not automatically sent; leaders copy and share secure links. The application uses real Supabase data. See `docs/MVP2_COMPLETION_REPORT.md` for verification results and limitations.
+MVP 3 adds paper sections/reviews/reference metadata, restricted dataset governance, in-app notifications, analytics, eight PDF report types, manual GitHub task links and a unified timeline. Task checklists/dependencies/multiple assignees, outbound notifications and authenticated GitHub sync remain future scope. Invitation emails are not automatically sent; leaders copy and share secure links. The application uses real Supabase data. See `docs/MVP3_COMPLETION_REPORT.md` for actual verification results and limitations.
 
 ## Documentation
 

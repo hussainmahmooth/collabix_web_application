@@ -47,4 +47,5 @@ test-results/
 !.env.example
 
 .mvp2-test/
+.mvp3-test/
 supabase/.temp/

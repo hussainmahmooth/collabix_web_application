@@ -38,6 +38,8 @@ import { Button, Empty, Modal } from "./components/ui";
 import { check, supabase } from "./lib/supabase";
 import { workspaceCapacity } from "./lib/capacity";
 import { CollaborationSummary } from "./collaboration/CollaborationView";
+import { ResearchSummary } from "./research/ResearchView";
+import TaskResearchLinks from "./research/TaskResearchLinks";
 import {
   initials,
   isOverdue,
@@ -199,6 +201,9 @@ function TaskForm({
           <ArrowUpRight size={16} />
         </Button>
       </form>
+      {task && (
+        <TaskResearchLinks workspace={data.workspace.id} task={task.id} />
+      )}
     </Modal>
   );
 }
@@ -716,6 +721,7 @@ export default function WorkspaceView({
               </div>
             </section>
           </div>
+          <ResearchSummary workspace={data.workspace.id} userId={userId} />
           <CollaborationSummary
             workspaceId={w.id}
             userId={userId}
@@ -1433,8 +1439,8 @@ export default function WorkspaceView({
               </label>
             </div>
             <p className="form-hint">
-              Progress is calculated from completed, non-archived tasks.
-              Submit this phase in Supervisor Reviews for academic feedback.
+              Progress is calculated from completed, non-archived tasks. Submit
+              this phase in Supervisor Reviews for academic feedback.
             </p>
             <Button disabled={busy}>Save phase</Button>
           </form>

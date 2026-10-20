@@ -37,6 +37,17 @@ import type {
 import { initials } from "./lib/types";
 import { Button, Footer, Modal, Empty } from "./components/ui";
 import Auth from "./Auth";
+import { NotificationBell } from "./research/Notifications";
+const ResearchView = lazy(() => import("./research/ResearchView"));
+const researchPages = [
+  "papers",
+  "datasets",
+  "notifications",
+  "analytics",
+  "reports",
+  "github",
+  "timeline",
+];
 const WorkspaceView = lazy(() => import("./WorkspaceView"));
 const CollaborationView = lazy(
   () => import("./collaboration/CollaborationView"),
@@ -302,6 +313,13 @@ export default function App() {
             },
             { url: "announcements", label: "Announcements", icon: Megaphone },
             { url: "activity", label: "Activity history", icon: History },
+            { url: "papers", label: "Research Papers", icon: Files },
+            { url: "datasets", label: "Datasets", icon: Layers3 },
+            { url: "notifications", label: "Notifications", icon: Megaphone },
+            { url: "analytics", label: "Analytics", icon: LayoutDashboard },
+            { url: "reports", label: "Reports", icon: Files },
+            { url: "github", label: "GitHub Tracking", icon: CheckSquare },
+            { url: "timeline", label: "Research Timeline", icon: CalendarDays },
           ].map((n) => (
             <NavLink
               key={n.url}
@@ -390,6 +408,9 @@ export default function App() {
             </strong>
           </div>
           <div className="topbar-actions">
+            {active && (
+              <NotificationBell workspace={active.id} user={session.user.id} />
+            )}
             <label className="search">
               <Search size={17} />
               <input
@@ -498,7 +519,16 @@ export default function App() {
                   <div className="loading-screen">Loading workspace…</div>
                 }
               >
-                {collaborationPages.includes(page) ? (
+                {researchPages.includes(page) ? (
+                  <ResearchView
+                    key={active.id}
+                    workspace={{ ...details.data, workspace: active }}
+                    userId={session.user.id}
+                    page={page}
+                    busy={busy}
+                    mutate={mutate}
+                  />
+                ) : collaborationPages.includes(page) ? (
                   <CollaborationView
                     key={active.id}
                     workspace={{ ...details.data, workspace: active }}

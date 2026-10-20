@@ -5,6 +5,7 @@ import { Button, Empty, Modal } from "../components/ui";
 import { check, supabase } from "../lib/supabase";
 import { displayTime, type Submission } from "./model";
 import { useCollab, Stamp, Files, Status, usePerson } from "./Shared";
+import PaperReviewQueue from "../research/PaperReviewQueue";
 export default function Reviews() {
   const { workspace, data, userId, leader, supervisor, busy, run, act } =
     useCollab();
@@ -49,6 +50,9 @@ export default function Reviews() {
     .sort((a, b) => b.created_at.localeCompare(a.created_at));
   return (
     <>
+      {(supervisor || leader) && (
+        <PaperReviewQueue workspace={workspace.workspace.id} user={userId} />
+      )}
       {supervisor && (
         <section className="panel collab-panel">
           <h2>Academic supervisor portal</h2>
