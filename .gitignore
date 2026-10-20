@@ -45,3 +45,6 @@ dist/
 playwright-report/
 test-results/
 !.env.example
+
+.mvp2-test/
+supabase/.temp/

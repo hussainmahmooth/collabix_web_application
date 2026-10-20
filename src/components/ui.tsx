@@ -1,10 +1,17 @@
-import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  forwardRef,
+  type ButtonHTMLAttributes,
+  type ReactNode,
+} from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
+export const OperationFeedbackContext = createContext("");
 const buttonVariants = cva("button", {
   variants: {
     variant: {
@@ -39,6 +46,7 @@ export function Modal({
   children: ReactNode;
   onClose: () => void;
 }) {
+  const operationError = useContext(OperationFeedbackContext);
   return (
     <DialogPrimitive.Root open onOpenChange={(open) => !open && onClose()}>
       <DialogPrimitive.Portal>
@@ -59,6 +67,11 @@ export function Modal({
               <X size={20} />
             </DialogPrimitive.Close>
           </div>
+          {operationError && (
+            <p className="error-box" role="alert">
+              {operationError}
+            </p>
+          )}
           {children}
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>

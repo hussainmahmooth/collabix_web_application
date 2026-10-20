@@ -16,4 +16,14 @@ Netlify serves `dist/`, HTTPS, static response security headers and an SPA rewri
 - `supabase/migrations/`: checked-in cloud migration snapshot.
 - `supabase/tests/isolation.sql`: transactional permission tests.
 
-Supabase Realtime and Edge Functions are reserved for subsequent milestones. No live GitHub synchronization or fake notification service is presented.
+## MVP 2 collaboration
+
+`src/collaboration/` contains separate Documents, Discussions, Meetings, Reviews and Announcements screens, shared typed data/file/timezone helpers, and the collaboration shell/activity/dashboard integration. Authenticated routes reuse the existing workspace selector, session, members, task/phase data and mutation feedback. Modal errors are announced inside the active Radix dialog.
+
+TanStack Query caches metadata by workspace AND user, paginates metadata requests, polls for reconnect recovery and invalidates after mutations. Messages load the latest 100 with explicit earlier-history loading. Realtime Postgres Changes subscriptions use workspace filters and RLS. The connection indicator waits for backend `system` replication readiness, not only a WebSocket join. Events invalidate persisted queries; they are not the sole copy of any message.
+
+The public security-invoker RPC `rf_collaborate(action,p)` delegates to `rf_private.collaborate`. The private implementation checks current membership, role, ownership and related resources, then performs atomic workflows. Browser roles have SELECT through RLS on the new tables, with no direct DML grants. A private bucket stores immutable random file paths; database metadata controls signed file reads. Uploading bytes and registering metadata are separate operations; failed registrations attempt orphan cleanup, and a document with an interrupted first upload remains an editable draft.
+
+Realtime is enabled only on `rf_messages`, `rf_channels`, and `rf_files` for this implementation. No Edge Function or external worker is required. No live GitHub synchronization or fake notification service is presented.
+
+The backend-readiness handling follows [Supabase Postgres Changes troubleshooting](https://supabase.com/docs/guides/troubleshooting/realtime-postgres-changes-troubleshooting). File policies follow [Supabase Storage access control](https://supabase.com/docs/guides/storage/security/access-control).

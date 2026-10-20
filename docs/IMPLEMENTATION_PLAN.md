@@ -12,8 +12,10 @@ React/Vite foundation, shared branding/footer, Supabase authentication flows, at
 4. Confirm mobile behavior and academic phase defaults with the intended research team.
 5. Review backup, retention, account deletion and operational ownership before broad usage.
 
-Do not begin later milestones until MVP 1 has been reviewed and verified by the owner.
+The owner authorized MVP 2 after MVP 1 deployment. MVP 2 extends the existing application and membership model.
 
 ## Follow-up scope
 
-First: supervisor reviews with immutable evidence, milestones, task comments/checklists/dependencies/calendar and multiple assignees. Then: realtime channels, immutable document versions and meeting action items. Later: dataset registry, paper authoring tracking, notifications, weekly PDF reports, evidence-based contribution metrics and manual GitHub links. GitHub OAuth/webhooks are a separate authenticated integration, not a simulated sync.
+MVP 2 implements private documents/versioning first, followed by persisted Realtime discussions, meetings/action conversion, academic reviews, announcements, activity history and dashboard integration. `MVP2_DESIGN.md` records the design; `MVP2_COMPLETION_REPORT.md` records actual results.
+
+Later scope: task comments/checklists/dependencies and multiple assignees, dataset registry, paper authoring tracking, notifications, weekly PDF reports, evidence-based contribution metrics and manual GitHub evidence links. GitHub OAuth/webhooks remain a separate authenticated integration.

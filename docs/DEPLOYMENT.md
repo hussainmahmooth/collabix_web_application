@@ -10,11 +10,11 @@ Use Node 22 or newer, `npm ci`, copy `.env.example` to `.env.local`, set the Sup
 
 ## Database
 
-Migrations in `supabase/migrations/` have been applied to the connected cloud project. Do not replay them there. On a fresh project, apply each once in filename order using Supabase migrations/SQL editor. `supabase/schema.sql` is a consolidated readable snapshot. The latest follow-up migration enforces six team members plus one supervisor. Run the transactional SQL tests and advisors afterward.
+Migrations in `supabase/migrations/` have been applied to the connected cloud project. Do not replay them there. On a fresh project, apply each once in filename order using Supabase migrations/SQL editor. `supabase/schema.sql` is a consolidated readable snapshot. The MVP 1 capacity migration remains in force. MVP 2 migrations add collaboration, private Storage, Realtime publication, a Storage path-policy correction and review ownership checks. Run transactional SQL tests and advisors afterward.
 
 ## Supabase Auth configuration required
 
-In Authentication → URL Configuration set Site URL to `https://teamprojectcolla.netlify.app`. Allow redirects to `https://teamprojectcolla.netlify.app/dashboard` and `https://teamprojectcolla.netlify.app/reset-password`, plus localhost equivalents for development. Keep email confirmation enabled. Configure a production SMTP provider, then verify signup and reset emails with real accounts. The owner confirmed there is no SMTP provider yet. See `EMAIL_SETUP.md` for the required account setup and delivery verification. The integration tools do not expose Auth configuration; this step must be verified in the Supabase dashboard.
+In Authentication → URL Configuration set Site URL to `https://teamprojectcolla.netlify.app`. Allow redirects to `https://teamprojectcolla.netlify.app/dashboard` and `https://teamprojectcolla.netlify.app/reset-password`, plus localhost equivalents for development. Keep email confirmation enabled. Brevo SMTP is configured and a password-reset API test succeeded after the username correction. Confirm inbox delivery and real-user signup separately. See `EMAIL_SETUP.md`; Auth configuration lives in the Supabase dashboard.
 
 ## Netlify
 
@@ -23,3 +23,9 @@ In Authentication → URL Configuration set Site URL to `https://teamprojectcoll
 Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` as build environment variables. Both were configured and read back in the **production** context through the account connector. The connector's initial `all` context requests reported success without persisting the new variables, so production-context creation was required. Configure other contexts separately before enabling previews. Never use service-role credentials. `.netlify` is ignored if CLI linking is used. Git continuous deployment keeps the live site and GitHub source matched.
 
 After publication, verify HTTPS, root and deep URLs, security headers, JS/CSS assets, login UI and responsive layout. Complete real-email user acceptance before relying on this for confidential research. Track executed checks in `VALIDATION.md`.
+
+## MVP 2 configuration
+
+No new frontend environment variables or external services are required. The migrations create the private `researchflow-files` bucket, default channels/folders for current and future workspaces, protected functions/grants and the Realtime publication entries. Keep the bucket private. Confirm the project's Realtime service is enabled; the live two-client test verified it for this project. Deploy the database first, then the Vite bundle via existing Git continuous deployment. New routes use the existing SPA rewrite. `robots.txt` excludes authenticated application routes; only the public homepage is in the sitemap.
+
+Retain version/review/audit records. Backups, retention, orphan-upload maintenance and storage quota monitoring require operational ownership; no scheduled cleanup worker or irreversible document purge is enabled by this release. Signed links last 60 seconds. New files are limited to 20 MB; large-dataset hosting is outside this document module.

@@ -37,6 +37,7 @@ import type { WorkspaceData } from "./App";
 import { Button, Empty, Modal } from "./components/ui";
 import { check, supabase } from "./lib/supabase";
 import { workspaceCapacity } from "./lib/capacity";
+import { CollaborationSummary } from "./collaboration/CollaborationView";
 import {
   initials,
   isOverdue,
@@ -715,6 +716,12 @@ export default function WorkspaceView({
               </div>
             </section>
           </div>
+          <CollaborationSummary
+            workspaceId={w.id}
+            userId={userId}
+            activity={audit}
+            members={members}
+          />
         </>
       ) : page === "tasks" ? (
         <>
@@ -953,7 +960,11 @@ export default function WorkspaceView({
                 <p>{w.name}</p>
               </div>
               {leader && (
-                <Button variant="outline" disabled={busy} onClick={() => setEditResearch(true)}>
+                <Button
+                  variant="outline"
+                  disabled={busy}
+                  onClick={() => setEditResearch(true)}
+                >
                   <Pencil size={14} /> Edit research title
                 </Button>
               )}
@@ -996,9 +1007,31 @@ export default function WorkspaceView({
                         }, "Member role updated")
                       }
                     >
-                      <option value="member" disabled={m.role === 'supervisor' && !capacity.canInviteMember}>Member</option>
-                      <option value="supervisor" disabled={m.role !== 'supervisor' && !capacity.canInviteSupervisor}>Supervisor</option>
-                      <option value="leader" disabled={m.role === 'supervisor' && !capacity.canInviteMember}>Leader</option>
+                      <option
+                        value="member"
+                        disabled={
+                          m.role === "supervisor" && !capacity.canInviteMember
+                        }
+                      >
+                        Member
+                      </option>
+                      <option
+                        value="supervisor"
+                        disabled={
+                          m.role !== "supervisor" &&
+                          !capacity.canInviteSupervisor
+                        }
+                      >
+                        Supervisor
+                      </option>
+                      <option
+                        value="leader"
+                        disabled={
+                          m.role === "supervisor" && !capacity.canInviteMember
+                        }
+                      >
+                        Leader
+                      </option>
                     </select>
                     <Button
                       variant="ghost"
@@ -1033,13 +1066,16 @@ export default function WorkspaceView({
                 <div>
                   <h2>Workspace invitations</h2>
                   <p>
-                    All invitees, including pending, accepted and expired invitations.
-                    Deleting an invitation does not remove an existing member.
+                    All invitees, including pending, accepted and expired
+                    invitations. Deleting an invitation does not remove an
+                    existing member.
                   </p>
                 </div>
               </div>
               {invitations.length === 0 && (
-                <Empty title="No invitations yet">Invite a teammate to generate a secure, email-bound link.</Empty>
+                <Empty title="No invitations yet">
+                  Invite a teammate to generate a secure, email-bound link.
+                </Empty>
               )}
               {invitations.map((i) => (
                 <div className="invitation-row" key={i.id}>
@@ -1398,28 +1434,50 @@ export default function WorkspaceView({
             </div>
             <p className="form-hint">
               Progress is calculated from completed, non-archived tasks.
-              Supervisor review workflows are planned for MVP 2.
+              Submit this phase in Supervisor Reviews for academic feedback.
             </p>
             <Button disabled={busy}>Save phase</Button>
           </form>
         </Modal>
       )}
       {editResearch && leader && (
-        <Modal title="Edit research title" onClose={() => setEditResearch(false)}>
-          <form onSubmit={(e) => {
-            e.preventDefault();
-            const title = String(new FormData(e.currentTarget).get("research_title") || "").trim();
-            if (!title) return;
-            void mutate(async () => {
-              check(await supabase.from("rf_workspaces").update({ research_title: title }).eq("id", w.id).select("id").single());
-              setEditResearch(false);
-            }, "Research title saved");
-          }}>
+        <Modal
+          title="Edit research title"
+          onClose={() => setEditResearch(false)}
+        >
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const title = String(
+                new FormData(e.currentTarget).get("research_title") || "",
+              ).trim();
+              if (!title) return;
+              void mutate(async () => {
+                check(
+                  await supabase
+                    .from("rf_workspaces")
+                    .update({ research_title: title })
+                    .eq("id", w.id)
+                    .select("id")
+                    .single(),
+                );
+                setEditResearch(false);
+              }, "Research title saved");
+            }}
+          >
             <label>
               Research title
-              <input name="research_title" required pattern={".*\\S.*"} maxLength={300} defaultValue={w.research_title} />
+              <input
+                name="research_title"
+                required
+                pattern={".*\\S.*"}
+                maxLength={300}
+                defaultValue={w.research_title}
+              />
             </label>
-            <Button type="submit" disabled={busy}>Save research title</Button>
+            <Button type="submit" disabled={busy}>
+              Save research title
+            </Button>
           </form>
         </Modal>
       )}
@@ -1430,11 +1488,33 @@ export default function WorkspaceView({
           onClose={() => setDeleteInvite(null)}
         >
           <div className="member-actions">
-            <Button variant="outline" disabled={busy} onClick={() => setDeleteInvite(null)}>Cancel</Button>
-            <Button variant="destructive" disabled={busy} onClick={() => void mutate(async () => {
-              check(await supabase.from("rf_workspace_invitations").delete().eq("workspace_id", w.id).eq("id", deleteInvite.id).select("id").single());
-              setDeleteInvite(null);
-            }, "Invitation deleted")}>Delete invitation</Button>
+            <Button
+              variant="outline"
+              disabled={busy}
+              onClick={() => setDeleteInvite(null)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={busy}
+              onClick={() =>
+                void mutate(async () => {
+                  check(
+                    await supabase
+                      .from("rf_workspace_invitations")
+                      .delete()
+                      .eq("workspace_id", w.id)
+                      .eq("id", deleteInvite.id)
+                      .select("id")
+                      .single(),
+                  );
+                  setDeleteInvite(null);
+                }, "Invitation deleted")
+              }
+            >
+              Delete invitation
+            </Button>
           </div>
         </Modal>
       )}
@@ -1450,13 +1530,11 @@ export default function WorkspaceView({
               const f = new FormData(e.currentTarget);
               void mutate(async () => {
                 check(
-                  await supabase
-                    .from("rf_workspace_invitations")
-                    .insert({
-                      workspace_id: w.id,
-                      email: String(f.get("email")).trim().toLowerCase(),
-                      role: f.get("role"),
-                    }),
+                  await supabase.from("rf_workspace_invitations").insert({
+                    workspace_id: w.id,
+                    email: String(f.get("email")).trim().toLowerCase(),
+                    role: f.get("role"),
+                  }),
                 );
                 setInvite(false);
               }, "Invitation created. Copy the link from the invitations list.");
@@ -1473,16 +1551,29 @@ export default function WorkspaceView({
             </label>
             <label>
               Workspace role
-              <select name="role" defaultValue={capacity.canInviteMember ? "member" : "supervisor"}>
-                <option value="member" disabled={!capacity.canInviteMember}>Team member</option>
-                <option value="supervisor" disabled={!capacity.canInviteSupervisor}>Academic supervisor</option>
+              <select
+                name="role"
+                defaultValue={
+                  capacity.canInviteMember ? "member" : "supervisor"
+                }
+              >
+                <option value="member" disabled={!capacity.canInviteMember}>
+                  Team member
+                </option>
+                <option
+                  value="supervisor"
+                  disabled={!capacity.canInviteSupervisor}
+                >
+                  Academic supervisor
+                </option>
               </select>
             </label>
             <p className="form-hint">
               An invitation link will be generated. Share it with this person
-              directly. They must sign in with this verified email address.
-              Each workspace has six team places, including the leader, plus one supervisor place (seven people total).
-              Pending invitations do not reserve places.
+              directly. They must sign in with this verified email address. Each
+              workspace has six team places, including the leader, plus one
+              supervisor place (seven people total). Pending invitations do not
+              reserve places.
             </p>
             <Button disabled={busy || capacity.full}>
               Create invitation <ArrowUpRight size={16} />

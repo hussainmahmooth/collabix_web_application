@@ -29,3 +29,13 @@ Vitest covers progress exclusions, overdue date rules, initials, the permanent c
 - Keyboard-only dialog navigation; screen reader; tablet/mobile layout; dark theme contrast.
 
 See `VALIDATION.md` for executed results, separated from planned checks. A passing static build is not proof of end-to-end email or production readiness.
+
+## MVP 2 verification
+
+- `src/collaboration/model.test.ts`: IANA/UTC conversion, DST gap rejection, file size/type/extension boundaries and safe meeting links.
+- `supabase/tests/mvp2.sql`: rolled-back cloud integration for defaults, direct-DML denial, message persistence/edit ownership/unread state, private files and assigned readers, version preservation, meeting minutes/actions, idempotent task conversion, academic/internal separation, immutable decisions, phase approval bypass prevention, original-author self-review after role changes, cross-workspace references and metadata-only audit.
+- `scripts/test-mvp2-live.mjs`: actual authenticated clients exercise Realtime backend readiness and INSERT delivery, PostgREST persistence, private Storage byte upload and signed download, version history and reader revocation. It requires disposable confirmed fixtures, sends no email and contains no service key. Admin fixture provisioning/cleanup is performed separately, and objects are removed through Storage API before deleting test workspaces/users.
+- `tests/mvp2.spec.ts`: desktop/mobile leader/member/supervisor UI with isolated contract fixtures. Covers upload/version/review request, meeting timezone/minutes/actions, channel/message editing/replies/deletion, academic feedback, announcement permissions and mobile overflow. WebSocket traffic is intercepted in these UI fixtures; real Realtime is verified by the separate live integration script.
+- Existing auth/workspace/capacity regression tests remain required. UI fixture tests do not prove backend authorization; SQL and live tests provide that evidence.
+
+Record final actual results in `MVP2_COMPLETION_REPORT.md`. Human screen-reader/Safari acceptance, SMTP inbox delivery and long-running operational/load tests remain manual checks.

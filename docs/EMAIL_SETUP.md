@@ -10,7 +10,7 @@ The app now explains this error, prevents duplicate in-flight requests, and paus
 
 ## Set up a sender
 
-The owner confirmed they do not yet have an SMTP provider. One supported option is Brevo; other SMTP providers listed by Supabase also work.
+Brevo was subsequently configured by the owner. Supabase now uses the Brevo host on port 587 and the account's exact SMTP login. A password-reset request succeeded after the login correction. Recipient inbox delivery and a real signup remain acceptance checks; this status supersedes the original missing-provider diagnosis.
 
 1. Create the provider account and complete its required sender verification and transactional-email activation. Use an address you control. Follow the provider's domain authentication guidance for reliable delivery.
 2. Obtain SMTP host, port, login, SMTP password/key and verified sender address from that provider. Never commit or paste these credentials into chat.
@@ -21,4 +21,4 @@ The owner confirmed they do not yet have an SMTP provider. One supported option 
 
 [Brevo SMTP setup](https://help.brevo.com/hc/en-us/articles/7924908994450-Send-transactional-emails-using-Brevo-SMTP) and [sender verification](https://help.brevo.com/hc/en-us/articles/208836149-Create-a-new-sender-From-name-and-From-email).
 
-No SMTP account, credentials or sender verification were supplied during implementation. Provider setup and real-message verification remain pending. The connected database tools cannot change Supabase Auth SMTP configuration.
+The owner enters SMTP keys directly in Supabase; none are stored in this repository. The connected database tools cannot change Supabase Auth SMTP configuration. Do not substitute a Brevo account password or an API key for an SMTP key.

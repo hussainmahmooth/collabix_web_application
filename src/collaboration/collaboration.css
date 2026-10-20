@@ -1,0 +1,416 @@
+.collaboration {
+  min-width: 0;
+}
+.collab-toolbar {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0 0 22px;
+}
+.collab-toolbar label {
+  margin: 0;
+  min-width: 130px;
+  flex: 1;
+}
+.collab-toolbar > .button {
+  flex-shrink: 0;
+}
+.collab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr));
+  gap: 20px;
+}
+.collab-card,
+.collab-panel {
+  padding: 24px;
+  margin-bottom: 20px;
+  min-width: 0;
+}
+.collab-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 0;
+}
+.collab-card h2,
+.collab-panel h2 {
+  font-size: 18px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.collab-card p,
+.collab-panel p {
+  color: var(--muted);
+  line-height: 1.7;
+}
+.collab-card .button {
+  align-self: start;
+}
+.collab-card-top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  color: var(--accent);
+}
+.collab-title-button {
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.collab-title-button:hover {
+  color: var(--accent);
+}
+.collab-status {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+  border-radius: 8px;
+  padding: 5px 8px;
+}
+.collab-meta {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+.collab-body {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.7;
+  font-size: 13px;
+}
+.collab-check {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+.collab-check input,
+.collab-checkboxes input {
+  width: 16px !important;
+  min-height: 16px !important;
+  height: 16px;
+  flex: none;
+}
+.collab-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 12px 0 20px;
+}
+.collab-checkboxes label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+.collab-files {
+  display: grid;
+  gap: 8px;
+}
+.collab-file {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  min-width: 0;
+}
+.collab-file > span {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+.collab-file small {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+}
+.collab-file .button {
+  padding: 7px;
+  min-width: 32px;
+}
+.file-preview {
+  display: block;
+  max-width: 100%;
+  max-height: 65vh;
+  object-fit: contain;
+}
+.text-preview {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 60vh;
+  overflow-y: auto;
+  font-size: 12px;
+}
+.collab-subform {
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  margin: 18px 0;
+}
+.collab-subform h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.collab-history {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+  overflow-wrap: anywhere;
+}
+.collab-history small {
+  display: block;
+  color: var(--muted);
+  margin-top: 6px;
+}
+.collab-history p {
+  margin: 8px 0;
+}
+.collab-review {
+  padding: 12px;
+  border-left: 3px solid var(--accent);
+  margin: 12px 0;
+  font-size: 12px;
+}
+.discussion-layout {
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+.channel-list {
+  padding: 16px;
+}
+.channel-list .panel-heading {
+  padding: 0 0 14px;
+}
+.channel-list .panel-heading h2 {
+  font-size: 15px;
+}
+.channel-link {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 12px 8px;
+  font-size: 12px;
+  color: var(--muted);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+}
+.channel-link span {
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+.channel-link.active {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.channel-link strong {
+  background: var(--accent);
+  color: white;
+  border-radius: 12px;
+  padding: 2px 6px;
+  font-size: 10px;
+}
+.chat-panel {
+  min-width: 0;
+}
+.chat-panel .panel-heading {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.message-stream {
+  height: 55dvh;
+  min-height: 250px;
+  overflow-y: auto;
+  padding: 18px;
+  overscroll-behavior: contain;
+}
+.message-row {
+  display: flex;
+  gap: 10px;
+  padding: 16px 0;
+}
+.message-row .avatar {
+  flex: none;
+}
+.message-content {
+  flex: 1;
+  min-width: 0;
+}
+.message-content > strong {
+  font-size: 13px;
+}
+.message-content blockquote {
+  padding: 10px;
+  margin: 10px 0;
+  border-left: 3px solid var(--accent);
+  background: var(--background);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+.message-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 5px;
+}
+.message-tools .button {
+  font-size: 10px;
+  padding: 5px;
+  min-height: 26px;
+}
+.chat-compose {
+  border-top: 1px solid var(--border);
+  padding: 18px;
+}
+.chat-compose .collab-toolbar {
+  margin-bottom: 0;
+}
+.chat-compose input[type="file"] {
+  max-width: 100%;
+  font-size: 11px;
+}
+.chat-compose textarea {
+  max-height: 25dvh;
+  resize: vertical;
+}
+.reply-label {
+  font-size: 12px;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.meeting-calendar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  margin-top: 20px;
+}
+.calendar-weekday {
+  font-size: 11px;
+  text-align: center;
+  padding: 8px 0;
+}
+.calendar-day {
+  min-height: 95px;
+  min-width: 0;
+  border: 1px solid var(--border);
+  padding: 8px;
+  font-size: 11px;
+}
+.calendar-day button {
+  display: block;
+  max-width: 100%;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  border: 0;
+  border-radius: 5px;
+  padding: 6px 4px;
+  text-align: left;
+  font-size: 10px;
+  overflow-wrap: anywhere;
+  margin-top: 6px;
+  cursor: pointer;
+}
+.empty-day {
+  background: var(--background);
+}
+.announcement-list {
+  display: grid;
+  gap: 20px;
+}
+.collab-inline-form {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.collab-inline-form label {
+  flex: 1;
+  margin: 0;
+}
+.collab-dashboard {
+  margin-top: 24px;
+  padding: 24px;
+}
+.collab-dashboard .panel-heading {
+  padding: 0 0 18px;
+}
+.collab-dashboard p {
+  font-size: 12px;
+  margin-top: 14px;
+  overflow-wrap: anywhere;
+}
+.collab-summary-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  font-size: 12px;
+}
+.collab-summary-links strong {
+  display: block;
+  font-size: 25px;
+  color: var(--accent);
+}
+@media (max-width: 800px) {
+  .discussion-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .channel-list {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  .channel-link {
+    display: inline-flex;
+    width: auto;
+    max-width: 100%;
+    margin-right: 5px;
+  }
+  .message-stream {
+    height: 45dvh;
+  }
+  .collab-card,
+  .collab-panel,
+  .collab-dashboard {
+    padding: 18px;
+  }
+  .calendar-day {
+    padding: 4px;
+    min-height: 70px;
+  }
+  .calendar-day button {
+    font-size: 9px;
+    padding: 4px 1px;
+  }
+  .collab-toolbar label {
+    min-width: 120px;
+  }
+  .collab-file {
+    flex-wrap: wrap;
+  }
+  .collab-file > span {
+    flex-basis: 65%;
+  }
+}

@@ -5,6 +5,12 @@ Disallow: /tasks
 Disallow: /phases
 Disallow: /team
 Disallow: /settings
+Disallow: /documents
+Disallow: /discussions
+Disallow: /meetings
+Disallow: /reviews
+Disallow: /announcements
+Disallow: /activity
 Disallow: /login
 Disallow: /register
 Disallow: /reset-password

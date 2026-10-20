@@ -28,3 +28,30 @@ The founding leader cannot be removed or demoted. Workspace switching never uses
 ## Nonfunctional requirements
 
 Strict TypeScript, real Supabase persistence, server-side authorization, no browser service key, reproducible lockfile, mobile layouts, keyboard access and clear failure reporting. The release must pass typecheck, lint, unit tests, SQL permission tests and production build; browser smoke coverage is documented separately. Live email verification delivery needs the project's Supabase Auth redirect and SMTP configuration.
+
+## MVP 2 permissions and workflows
+
+| Operation | Leader | Member | Assigned supervisor |
+|---|---|---|---|
+| Read workspace channels/messages; send/reply | Yes | Yes | Yes |
+| Create/rename/archive channels | Yes | No | No |
+| Edit messages | Own | Own | Own |
+| Delete messages | Any in workspace | Own | Own |
+| Create/upload document versions | Yes | Accessible documents | No |
+| Manage document confidentiality/readers | Leader or creator | Creator | Creator if previously authored |
+| Archive documents | Yes | No | No |
+| Read restricted documents | Yes | Creator/explicit reader | Yes |
+| Comment on accessible documents | Yes | Yes | Yes |
+| Submit document versions | Leader or version author | Version author | No |
+| Submit milestones | Yes | No | No |
+| Academic review | No | No | Yes; never own research |
+| Internal review | Yes; not own request | No | No |
+| Schedule meetings/comment | Yes | Yes | Yes |
+| Edit/cancel meeting, minutes/decisions/actions | Leader or organizer | Organizer | Organizer |
+| Convert meeting action to existing task | Yes | No | No |
+| Publish/edit/archive/pin announcements | Yes | No | No |
+| Read announcements/activity | Yes | Yes | Yes |
+
+Documents use ten default folders, immutable numbered versions and optional phase/task links. File validation allows PDF, DOCX, XLSX, CSV, TXT, Markdown and common raster images from 1 byte to 20 MB. Private signed file access follows current membership and ACLs. Academic/internal review statuses and reviewer history remain separate; phase academic state is independent of task-based progress.
+
+Meetings persist organizer, type, description, UTC start/end instants, IANA timezone, participants, location/link and agenda. Minutes/decisions/comments are authored append-only records. Action items require an active team assignee and deadline; conversion is atomic and idempotent. Announcements preserve author, publication timestamp, priority, pin/archive and optional attachments. Activity excludes private contents and supports member/type/date filtering.

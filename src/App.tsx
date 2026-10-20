@@ -18,6 +18,12 @@ import {
   Sun,
   Moon,
   ChevronDown,
+  MessageSquare,
+  Files,
+  CalendarDays,
+  GraduationCap,
+  Megaphone,
+  History,
 } from "lucide-react";
 import { supabase, check } from "./lib/supabase";
 import type {
@@ -32,6 +38,17 @@ import { initials } from "./lib/types";
 import { Button, Footer, Modal, Empty } from "./components/ui";
 import Auth from "./Auth";
 const WorkspaceView = lazy(() => import("./WorkspaceView"));
+const CollaborationView = lazy(
+  () => import("./collaboration/CollaborationView"),
+);
+const collaborationPages = [
+  "discussions",
+  "documents",
+  "meetings",
+  "reviews",
+  "announcements",
+  "activity",
+];
 
 export interface WorkspaceData {
   workspace: Workspace;
@@ -275,6 +292,16 @@ export default function App() {
             { url: "tasks", label: "Tasks", icon: CheckSquare },
             { url: "phases", label: "Research phases", icon: Layers3 },
             { url: "team", label: "Team members", icon: Users },
+            { url: "discussions", label: "Discussions", icon: MessageSquare },
+            { url: "documents", label: "Documents", icon: Files },
+            { url: "meetings", label: "Meetings", icon: CalendarDays },
+            {
+              url: "reviews",
+              label: "Supervisor Reviews",
+              icon: GraduationCap,
+            },
+            { url: "announcements", label: "Announcements", icon: Megaphone },
+            { url: "activity", label: "Activity history", icon: History },
           ].map((n) => (
             <NavLink
               key={n.url}
@@ -471,16 +498,27 @@ export default function App() {
                   <div className="loading-screen">Loading workspace…</div>
                 }
               >
-                <WorkspaceView
-                  key={active.id}
-                  data={{ ...details.data, workspace: active }}
-                  userId={session.user.id}
-                  name={name}
-                  page={page}
-                  search={search}
-                  busy={busy}
-                  mutate={mutate}
-                />
+                {collaborationPages.includes(page) ? (
+                  <CollaborationView
+                    key={active.id}
+                    workspace={{ ...details.data, workspace: active }}
+                    userId={session.user.id}
+                    page={page}
+                    busy={busy}
+                    mutate={mutate}
+                  />
+                ) : (
+                  <WorkspaceView
+                    key={active.id}
+                    data={{ ...details.data, workspace: active }}
+                    userId={session.user.id}
+                    name={name}
+                    page={page}
+                    search={search}
+                    busy={busy}
+                    mutate={mutate}
+                  />
+                )}
               </Suspense>
             )
           )}
@@ -490,7 +528,13 @@ export default function App() {
       {error && (
         <div role="alert" className="toast error-toast">
           {error}
-          <button className="icon-button" onClick={() => setError("")} aria-label="Dismiss error"><X size={16}/></button>
+          <button
+            className="icon-button"
+            onClick={() => setError("")}
+            aria-label="Dismiss error"
+          >
+            <X size={16} />
+          </button>
         </div>
       )}
       {notice && (
