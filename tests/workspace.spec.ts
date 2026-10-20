@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test'
 
 // Isolated UI contract fixtures; production always uses Supabase. Live RLS tests are in SQL.
-for (const full of [false, true]) {
-test(full ? 'six-member team shows its limit and disables invitations' : 'workspace navigation, task creation and branding on desktop and mobile', async ({ page }) => {
+for (const mode of ['normal', 'full', 'team-full', 'supervisor-full']) {
+const full = mode === 'full';
+test(mode !== 'normal' ? `${mode} workspace enforces separate team and supervisor places` : 'workspace navigation, task creation and branding on desktop and mobile', async ({ page }) => {
  const userId='11111111-1111-4111-8111-111111111111', workspaceId='22222222-2222-4222-8222-222222222222'
  let workspace={id:workspaceId,name:'Applied Intelligence Lab',research_title:'Forecasting for better retail decisions',institution:'Research University',department:'Computing',programme:'Applied research',supervisor_details:'',description:'Exploring practical forecasting with a shared research plan.',logo_path:null,accent_color:'#168e88',start_date:null,deadline:'2027-02-15',created_by:userId}
  const member={user_id:userId,role:'leader',responsibilities:'',rf_profiles:{full_name:'Test Researcher',skills:'Machine learning'}}
@@ -12,17 +13,24 @@ test(full ? 'six-member team shows its limit and disables invitations' : 'worksp
  await page.route('https://*.supabase.co/**',async route=>{
   const req=route.request();const path=new URL(req.url()).pathname;const method=req.method();let result:unknown=[]
   if(path.includes('/rf_workspaces')){if(method==='PATCH')workspace={...workspace,...req.postDataJSON()};result=[workspace]}
-  else if(path.includes('/rf_workspace_members'))result=Array.from({length:full?6:1},(_,i)=>({...member,user_id:i===0?userId:`member-${i}`,role:i===0?'leader':i===5?'supervisor':'member',rf_profiles:{...member.rf_profiles,full_name:i===0?'Test Researcher':`Team Member ${i}`}}))
+  else if(path.includes('/rf_workspace_members'))result=Array.from({length:full?7:mode==='team-full'?6:mode==='supervisor-full'?2:1},(_,i)=>({...member,user_id:i===0?userId:`member-${i}`,role:i===0?'leader':(full&&i===6)||(mode==='supervisor-full'&&i===1)?'supervisor':'member',rf_profiles:{...member.rf_profiles,full_name:i===0?'Test Researcher':`Team Member ${i}`}}))
   else if(path.includes('/rf_research_phases'))result=[phase]
   else if(path.includes('/rf_tasks')){if(method==='POST')tasks.unshift({...req.postDataJSON(),id:'44444444-4444-4444-8444-444444444444',status:'To Do',archived:false,created_at:new Date().toISOString(),updated_at:new Date().toISOString()});if(method==='PATCH')Object.assign(tasks[0],req.postDataJSON());result=tasks}
   else if(path.includes('/auth/v1/user'))result={id:userId,email:'ui-test@example.invalid'}
   await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(result)})
  })
  await page.goto('/dashboard');await expect(page.getByRole('heading',{name:'Let’s make progress, Test.'})).toBeVisible();await expect(page.getByRole('heading',{name:workspace.research_title})).toBeVisible()
- if(full) {
+ if(mode !== 'normal') {
   await page.getByRole('link',{name:test.info().project.name==='mobile'?'Team':'Team members',exact:true}).last().click()
-  await expect(page.getByText('6 of 6 places filled. Leaders and supervisors count toward the limit.')).toBeVisible()
-  await expect(page.getByRole('button',{name:'Team full (6/6)'})).toBeDisabled()
+  if(full) {
+   await expect(page.getByText('6/6 team members (including leaders) · 1/1 supervisor · 7/7 total')).toBeVisible()
+   await expect(page.getByRole('button',{name:'Workspace full (7/7)'})).toBeDisabled()
+  } else {
+   await page.getByRole('button',{name:'Invite teammate'}).click()
+   const roles=page.getByRole('combobox',{name:'Workspace role'})
+   await expect(roles).toHaveValue(mode==='team-full'?'supervisor':'member')
+   await expect(roles.locator(`option[value="${mode==='team-full'?'member':'supervisor'}"]`)).toHaveJSProperty('disabled', true)
+  }
   return
  }
  await page.screenshot({path:`test-results/dashboard-${test.info().project.name}.png`,fullPage:true})

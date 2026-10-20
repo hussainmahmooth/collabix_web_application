@@ -19,13 +19,21 @@ Live browser checks caught missing Supabase configuration in the first build. Th
 
 Verified production deployment: `6ad73c71c3f1e01ad85149a6`, Git commit `6797e485e82a4fc6d5bb701b21d3c4f3cf655a15`, published 20 October 2026 at 15:33 Asia/Colombo. Netlify reports `ready`, framework `vite`, no deployment error. The public build includes the correct Supabase project/public key. All 6 Playwright tests passed against `https://teamprojectcolla.netlify.app` in desktop and mobile Chromium (13.0 seconds). Workspace UI tests use route fixtures; live database authorization was separately verified through SQL.
 
-## Outstanding acceptance
-
 ## Six-member limit update
 
 Applied migration `20261020101209_six_member_workspace_limit`. Live transactional capacity tests passed for six memberships including leader/supervisor, rejecting the seventh, full-team invitation rejection, preserving a rejected link, freeing/reusing a place, and independent workspace capacity. Typecheck, lint and production build passed; all four workspace browser checks passed on desktop and mobile, including the disabled full-team invitation control. All database fixtures were rolled back.
 
 ## Remaining acceptance checks
+
+## Latest capacity and email-quota update
+
+Migration `20261020104843_six_team_members_plus_one_supervisor` replaces the earlier total-six rule with six team places (leaders included) and one supervisor place. Live transactional tests passed for separate quotas, both invitation types, role-change bypass rejection, retained rejected links, replacements and workspace isolation. No synthetic records remain.
+
+Typecheck, lint, production build and 13 unit/component tests passed. All 14 browser scenarios were verified across desktop and mobile, including quota-specific role availability and email-quota errors with a reload-persistent retry pause. The four native-option assertions were corrected to check the disabled DOM property and rerun successfully; application code did not change for that correction.
+
+Auth logs confirmed signup HTTP 429 `over_email_send_rate_limit`. The owner confirmed there is no SMTP provider yet. No provider account or SMTP credentials were created, no authentication protection was disabled, and real email delivery is **not yet fixed or verified**. `EMAIL_SETUP.md` documents the required sender configuration. Retry handling only prevents repeated requests and explains the service quota.
+
+## Operational acceptance still pending
 
 Real mailbox signup verification/reset delivery, Supabase production redirect allowlist and SMTP provider configuration, a real two-account browser acceptance exercise, private logo access with real browser sessions, independent accessibility/penetration testing, backups and operational monitoring. No production-readiness claim is made.
 

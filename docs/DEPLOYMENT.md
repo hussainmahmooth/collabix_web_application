@@ -10,11 +10,11 @@ Use Node 22 or newer, `npm ci`, copy `.env.example` to `.env.local`, set the Sup
 
 ## Database
 
-Migrations in `supabase/migrations/` have been applied to the connected cloud project. Do not replay them there. On a fresh project, apply each once in filename order using Supabase migrations/SQL editor. `supabase/schema.sql` is a consolidated readable snapshot. The follow-up migration enforces the six-member workspace limit. Run the transactional SQL tests and advisors afterward.
+Migrations in `supabase/migrations/` have been applied to the connected cloud project. Do not replay them there. On a fresh project, apply each once in filename order using Supabase migrations/SQL editor. `supabase/schema.sql` is a consolidated readable snapshot. The latest follow-up migration enforces six team members plus one supervisor. Run the transactional SQL tests and advisors afterward.
 
 ## Supabase Auth configuration required
 
-In Authentication → URL Configuration set Site URL to `https://teamprojectcolla.netlify.app`. Allow redirects to `https://teamprojectcolla.netlify.app/dashboard` and `https://teamprojectcolla.netlify.app/reset-password`, plus localhost equivalents for development. Keep email confirmation enabled. Configure a production SMTP provider, then verify signup and reset emails with real accounts. No SMTP credentials were provided by the user. The integration tools do not expose Auth configuration; this step must be verified in the Supabase dashboard.
+In Authentication → URL Configuration set Site URL to `https://teamprojectcolla.netlify.app`. Allow redirects to `https://teamprojectcolla.netlify.app/dashboard` and `https://teamprojectcolla.netlify.app/reset-password`, plus localhost equivalents for development. Keep email confirmation enabled. Configure a production SMTP provider, then verify signup and reset emails with real accounts. The owner confirmed there is no SMTP provider yet. See `EMAIL_SETUP.md` for the required account setup and delivery verification. The integration tools do not expose Auth configuration; this step must be verified in the Supabase dashboard.
 
 ## Netlify
 

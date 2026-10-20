@@ -1,4 +1,5 @@
--- Limit each workspace to six accepted memberships, counting every role.
+-- Historical initial limit; apply migrations in order. The current policy is
+-- defined in team_supervisor_capacity.sql (six team members + one supervisor).
 -- Pending invitations do not reserve seats. Acceptance is checked atomically.
 create function rf_private.guard_member_limit() returns trigger
 language plpgsql security definer set search_path='' as $$

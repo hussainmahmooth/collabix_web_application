@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,6 +6,7 @@ import { z } from "zod";
 import { ArrowUpRight, FlaskConical, Check, ArrowRight } from "lucide-react";
 import { configured, supabase } from "./lib/supabase";
 import { Button, Footer } from "./components/ui";
+import { authFailure } from "./lib/auth-errors";
 const schema = z.object({
   email: z.email("Enter a valid email address"),
   password: z.string().min(8, "Use at least 8 characters"),
@@ -25,6 +26,25 @@ export default function Auth({
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const inFlight = useRef(false);
+  const [retryUntil, setRetryUntil] = useState(Number(sessionStorage.getItem('rf-email-retry-until')) || 0);
+  const [now, setNow] = useState(Date.now());
+  const emailAction = !recovery && (registerMode || reset);
+  const retrySeconds = emailAction ? Math.max(0, Math.ceil((retryUntil - now) / 1000)) : 0;
+  useEffect(() => {
+    if (retryUntil <= Date.now()) return;
+    const timer = setInterval(() => {
+      const current = Date.now();
+      setNow(current);
+      if (current >= retryUntil) clearInterval(timer);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [retryUntil]);
+  function pauseEmailRequests() {
+    const until = Date.now() + 60000;
+    sessionStorage.setItem('rf-email-retry-until', String(until));
+    setNow(Date.now()); setRetryUntil(until);
+  }
   const {
     register,
     handleSubmit,
@@ -34,6 +54,8 @@ export default function Auth({
     defaultValues: { password: reset ? "unused-reset-password" : "" },
   });
   const submit = handleSubmit(async (values) => {
+    if (inFlight.current || retrySeconds > 0) return;
+    inFlight.current = true;
     setBusy(true);
     setError("");
     setNotice("");
@@ -58,6 +80,7 @@ export default function Auth({
         setNotice(
           "If that account exists, a password reset link is on its way.",
         );
+        pauseEmailRequests();
       } else if (registerMode) {
         const { error } = await supabase.auth.signUp({
           email: values.email,
@@ -69,6 +92,7 @@ export default function Auth({
         });
         if (error) throw error;
         setNotice("Check your email to verify your account, then sign in.");
+        pauseEmailRequests();
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: values.email,
@@ -77,12 +101,11 @@ export default function Auth({
         if (error) throw error;
       }
     } catch (e) {
-      setError(
-        e instanceof Error
-          ? e.message
-          : "Unable to authenticate. Please try again.",
-      );
+      const failure = authFailure(e);
+      setError(failure.message);
+      if (failure.emailRateLimited && emailAction) pauseEmailRequests();
     } finally {
+      inFlight.current = false;
       setBusy(false);
     }
   });
@@ -217,9 +240,11 @@ export default function Auth({
                   {notice}
                 </div>
               )}
-              <Button disabled={busy || !configured} type="submit">
+              <Button disabled={busy || !configured || retrySeconds > 0} type="submit">
                 {busy
                   ? "Please wait…"
+                  : retrySeconds > 0
+                    ? `Try again in ${retrySeconds}s`
                   : recovery
                     ? "Update password"
                     : reset

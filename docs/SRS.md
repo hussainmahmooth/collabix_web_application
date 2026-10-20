@@ -17,7 +17,7 @@ The founding leader cannot be removed or demoted. Workspace switching never uses
 
 ## Data requirements
 
-- Each workspace has a maximum of **six accepted members**, including leaders and supervisors. Pending invitations do not reserve seats. The database checks capacity when an invitation is created and again when accepted; membership admission takes a workspace row lock to serialize concurrent joins. Removing a member frees a place.
+- Each workspace has **six team places (leaders included) plus one supervisor place**, for seven people total. Role changes must obey these separate quotas. Pending invitations do not reserve seats. The database checks capacity when an invitation is created and again when accepted; membership admission takes a workspace row lock to serialize concurrent joins. Removing a member frees a place.
 
 - UUID keys, timestamps, foreign keys, bounded names, constrained roles/statuses/priorities and date consistency.
 - Cross-workspace task-to-phase and owner relationships are rejected by composite foreign keys.

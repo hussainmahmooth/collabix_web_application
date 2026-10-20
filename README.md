@@ -15,7 +15,7 @@ Use Node 22+. Run `npm ci`, copy `.env.example` to `.env.local`, set your Supaba
 - Seven editable research phases, owner/date/objective settings.
 - Tasks with assignment, priorities, dates, effort, board/list, filters, status changes and reversible archive.
 - Secure email-bound invitation links, three roles, guarded member management.
-- Maximum six people per workspace, including leaders and supervisors, enforced by the database.
+- Six team members (including leaders) plus one supervisor per workspace: seven people total, enforced by the database.
 - Database-derived dashboard, phase progress, task completion contribution summary and recent activity.
 - Responsive navigation, light/dark theme, profile editing, validation/errors/empty states and permanent developer credit.
 - RLS, immutable IDs, cross-workspace constraints, server-enforced task permissions and audit records.

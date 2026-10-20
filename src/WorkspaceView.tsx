@@ -36,6 +36,7 @@ import { z } from "zod";
 import type { WorkspaceData } from "./App";
 import { Button, Empty, Modal } from "./components/ui";
 import { check, supabase } from "./lib/supabase";
+import { workspaceCapacity } from "./lib/capacity";
 import {
   initials,
   isOverdue,
@@ -218,6 +219,7 @@ export default function WorkspaceView({
     undefined,
   );
   const [invite, setInvite] = useState(false);
+  const capacity = workspaceCapacity(members);
   const [view, setView] = useState("board");
   const [status, setStatus] = useState("All statuses");
   const [memberFilter, setMemberFilter] = useState("");
@@ -932,11 +934,11 @@ export default function WorkspaceView({
           {heading(
             "BETTER QUESTIONS. SHARED DISCOVERIES.",
             "Meet the minds behind the research.",
-            `${members.length} of 6 places filled. Leaders and supervisors count toward the limit.`,
+            `${capacity.team}/6 team members (including leaders) · ${capacity.supervisors}/1 supervisor · ${members.length}/7 total`,
             leader ? (
-              <Button disabled={members.length >= 6} onClick={() => setInvite(true)}>
+              <Button disabled={capacity.full} onClick={() => setInvite(true)}>
                 <Plus size={17} />
-                {members.length >= 6 ? "Team full (6/6)" : "Invite teammate"}
+                {capacity.full ? "Workspace full (7/7)" : "Invite teammate"}
               </Button>
             ) : undefined,
           )}
@@ -977,9 +979,9 @@ export default function WorkspaceView({
                         }, "Member role updated")
                       }
                     >
-                      <option value="member">Member</option>
-                      <option value="supervisor">Supervisor</option>
-                      <option value="leader">Leader</option>
+                      <option value="member" disabled={m.role === 'supervisor' && !capacity.canInviteMember}>Member</option>
+                      <option value="supervisor" disabled={m.role !== 'supervisor' && !capacity.canInviteSupervisor}>Supervisor</option>
+                      <option value="leader" disabled={m.role === 'supervisor' && !capacity.canInviteMember}>Leader</option>
                     </select>
                     <Button
                       variant="ghost"
@@ -1426,18 +1428,18 @@ export default function WorkspaceView({
             </label>
             <label>
               Workspace role
-              <select name="role">
-                <option value="member">Team member</option>
-                <option value="supervisor">Academic supervisor</option>
+              <select name="role" defaultValue={capacity.canInviteMember ? "member" : "supervisor"}>
+                <option value="member" disabled={!capacity.canInviteMember}>Team member</option>
+                <option value="supervisor" disabled={!capacity.canInviteSupervisor}>Academic supervisor</option>
               </select>
             </label>
             <p className="form-hint">
               An invitation link will be generated. Share it with this person
               directly. They must sign in with this verified email address.
-              Each workspace has six places, including leaders and supervisors.
+              Each workspace has six team places, including the leader, plus one supervisor place (seven people total).
               Pending invitations do not reserve places.
             </p>
-            <Button disabled={busy || members.length >= 6}>
+            <Button disabled={busy || capacity.full}>
               Create invitation <ArrowUpRight size={16} />
             </Button>
           </form>

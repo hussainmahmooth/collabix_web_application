@@ -15,6 +15,7 @@ Static hosting sends CSP, frame denial, MIME-sniffing prevention, referrer and p
 - Existing Collabix tables and auth trigger remain unchanged. The Supabase advisor flagged the legacy `public.handle_new_user()` mutable search path and API execution grants. Automatic approval review rejected changing that legacy behavior; the owner chose to leave it unchanged. It is not used for ResearchFlow authorization, but runs on signup in this shared project.
 - Legacy tables with enabled RLS and no policy are deny-by-default; informational advisor findings do not authorize opening them.
 - Email delivery, SMTP, email confirmation enforcement, redirect allowlist, abuse protection, leaked-password protection, backup/retention and operational monitoring must be checked in Supabase before a broad production rollout.
+- Auth logs confirmed `over_email_send_rate_limit` during signup. The owner has no SMTP provider configured for this work; custom SMTP setup and real-message delivery verification are pending. See `EMAIL_SETUP.md`. Client retry controls do not raise the server email quota, and email verification remains enabled.
 - No independent penetration test, compliance certification or production-readiness claim is made.
 - Full document permissions, confidential datasets, review evidence and notification workflows are outside MVP 1.
 
