@@ -11,13 +11,13 @@
 - Visual inspection: desktop and mobile dashboard screenshots reviewed; responsive panels and bottom navigation verified. Test screenshots contain explicit UI fixtures, not production data.
 - Supabase advisor: no ResearchFlow findings; existing Collabix trigger warnings and deny-by-default legacy table informational findings remain. Owner instructed us to leave the legacy trigger unchanged.
 
-## Acceptance checks not yet completed
-
 ## Hosting verification
 
 GitHub implementation commit: `90ae64d50c7fa1ae87709ebd0c1166c5e55a37b9`. Netlify detected Vite and published the SPA with one redirect and one security-header rule. Root, dashboard, registration and reset URLs returned HTTP 200, `X-Frame-Options: DENY` and `X-Content-Type-Options: nosniff`.
 
-Live browser checks caught missing Supabase configuration in the first build. The account connector had reported successful environment creation in the `all` context without persisting those variables. Recreating them explicitly in `production` succeeded and was confirmed by reading back the variable names, contexts and scopes. A follow-up Git deployment applies that environment correction; final live results are recorded after it publishes.
+Live browser checks caught missing Supabase configuration in the first build. The account connector had reported successful environment creation in the `all` context without persisting those variables. Recreating them explicitly in `production` succeeded and was confirmed by reading back the variable names, contexts and scopes.
+
+Verified production deployment: `6ad73c71c3f1e01ad85149a6`, Git commit `6797e485e82a4fc6d5bb701b21d3c4f3cf655a15`, published 20 October 2026 at 15:33 Asia/Colombo. Netlify reports `ready`, framework `vite`, no deployment error. The public build includes the correct Supabase project/public key. All 6 Playwright tests passed against `https://teamprojectcolla.netlify.app` in desktop and mobile Chromium (13.0 seconds). Workspace UI tests use route fixtures; live database authorization was separately verified through SQL.
 
 ## Outstanding acceptance
 
