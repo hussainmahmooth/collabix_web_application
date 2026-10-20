@@ -13,7 +13,7 @@
 
 ## Discussions
 
-Open **Discussions**, select a channel and send a message. Replies reference the original message; authors may edit their own messages, and authors/leaders may delete them. Deleted bodies and attachments are hidden. Leaders create, rename, archive or restore channels. Archived channels preserve history but accept no new posts. Attach supported files up to 20 MB. The channel list shows persisted unread counts; opening a channel marks only loaded messages as read. A reconnect indicator and periodic refresh recover missed updates; **Load earlier messages** retrieves older history.
+Open **Discussions**, select a channel and send a message. Replies reference the original message; authors may edit their own messages, and authors/leaders may delete them. Deleted bodies and attachments are hidden. Leaders create, rename, archive or restore channels. Archived channels preserve history but accept no new posts. Attach supported files up to 20 MB. The channel list shows persisted unread counts; opening a channel marks messages through the latest loaded timestamp as read. A reconnect indicator and periodic refresh recover missed updates; **Load earlier messages** retrieves older history.
 
 ## Documents
 

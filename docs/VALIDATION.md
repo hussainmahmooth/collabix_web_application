@@ -37,3 +37,8 @@ Auth logs confirmed signup HTTP 429 `over_email_send_rate_limit`. The owner conf
 
 Real mailbox signup verification/reset delivery, Supabase production redirect allowlist and SMTP provider configuration, a real two-account browser acceptance exercise, private logo access with real browser sessions, independent accessibility/penetration testing, backups and operational monitoring. No production-readiness claim is made.
 
+# MVP 2 verification — 20 October 2026
+
+MVP 2 extends the earlier MVP 1 validation record below/above. Final checks passed: TypeScript, ESLint, 18 unit tests (serial worker), production build, 22 desktop/mobile browser tests, both original SQL regression suites and the new rolled-back collaboration SQL suite. Live disposable authenticated clients verified Realtime delivery, message persistence, private file byte upload/download, immutable versions and restricted-reader revocation. All disposable accounts/workspaces/files were removed.
+
+Netlify production deploy `6ad7a6fa48b867d42d0768b4` serves code commit `b39c93c8f0f6a26ae106c71c64d163f1a4f41c5c`. Six collaboration routes and the published bundle returned HTTP 200. Two additional production desktop/mobile leader contract tests passed. See [MVP 2 completion report](MVP2_COMPLETION_REPORT.md) for exact commands, failed attempts corrected during implementation, scope, configuration and remaining manual/operational checks.
