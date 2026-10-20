@@ -2,11 +2,13 @@
 
 ## Cloudflare Pages
 
-Primary hosting is migrating to `https://researchflow-collabix.pages.dev` using the existing GitHub repository and `master` branch. Build command: `npm run build`; output: `dist`; Node: `22`. Set the existing browser-public `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` in Pages build variables. No service-role or SMTP credential belongs in these variables. `public/_headers` preserves the security headers previously supplied by Netlify. Pages supplies SPA fallback when there is no top-level `404.html`.
+Primary hosting is live at `https://researchflow-collabix.pages.dev` using the existing GitHub repository and `master` branch. Build command: `npm run build`; output: `dist`; Node: `22`. The existing browser-public `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` are configured in Pages build variables. No service-role or SMTP credential belongs in these variables. `public/_headers` preserves the security headers previously supplied by Netlify. Pages supplies SPA fallback when there is no top-level `404.html`.
 
 Keep the existing Supabase database, Auth, private Storage and Realtime, and the existing Brevo SMTP configuration. Add the new site's exact `/dashboard` and `/reset-password` redirects in Supabase Auth and use the new origin as Site URL after deployment succeeds. Preserve old Netlify redirect entries for existing email links. Users need to sign in again on the new origin; browser sessions do not transfer between domains.
 
 Migration commits use `[skip netlify]` to avoid spending Netlify credits. Existing Netlify hosting remains available during the migration. Update homepage canonical URL, sitemap and robots sitemap URL together when switching the primary origin. Search Console verification/indexing is separate for the new origin.
+
+Verified on 2026-10-20: Cloudflare production deployment `e2b66998-3502-439f-b965-65a9d7896119` serves commit `4dbd25d`. Root, `/dashboard`, `/documents`, `/reset-password` and `/sitemap.xml` returned HTTP 200 with the expected CSP and new canonical/sitemap origin. Four published-site Playwright checks passed across desktop and mobile: auth navigation/layout and MVP 2 leader workflows. Collaboration checks use mocked API fixtures; they do not repeat the real backend integration suite. Supabase URL Configuration visibly confirms the new Site URL and four exact dashboard/recovery redirect entries for Cloudflare and Netlify. Before migration, this dashboard was still configured with `http://localhost:3000` and no redirect URLs; this migration corrected it. Inbox delivery was not retested and no emails were sent. All existing backend data is retained.
 
 GitHub repository: `https://github.com/hussainmahmooth/collabix_web_application`.
 Existing Netlify project: `teamprojectcolla`, site ID `cfbbd130-f7ed-4e49-8d69-35088e965884`, production branch `master`.
@@ -22,7 +24,7 @@ Migrations in `supabase/migrations/` have been applied to the connected cloud pr
 
 ## Supabase Auth configuration required
 
-In Authentication → URL Configuration set Site URL to `https://teamprojectcolla.netlify.app`. Allow redirects to `https://teamprojectcolla.netlify.app/dashboard` and `https://teamprojectcolla.netlify.app/reset-password`, plus localhost equivalents for development. Keep email confirmation enabled. Brevo SMTP is configured and a password-reset API test succeeded after the username correction. Confirm inbox delivery and real-user signup separately. See `EMAIL_SETUP.md`; Auth configuration lives in the Supabase dashboard.
+In Authentication → URL Configuration use Site URL `https://researchflow-collabix.pages.dev`. The exact `/dashboard` and `/reset-password` redirects for both Cloudflare and the existing Netlify address are saved. Keep email confirmation enabled. Brevo SMTP is configured and a password-reset API test succeeded after the username correction. Confirm inbox delivery and real-user signup separately. See `EMAIL_SETUP.md`; Auth configuration lives in the Supabase dashboard.
 
 ## Netlify
 
