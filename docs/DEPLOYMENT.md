@@ -1,5 +1,13 @@
 # Deployment
 
+## Cloudflare Pages
+
+Primary hosting is migrating to `https://researchflow-collabix.pages.dev` using the existing GitHub repository and `master` branch. Build command: `npm run build`; output: `dist`; Node: `22`. Set the existing browser-public `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` in Pages build variables. No service-role or SMTP credential belongs in these variables. `public/_headers` preserves the security headers previously supplied by Netlify. Pages supplies SPA fallback when there is no top-level `404.html`.
+
+Keep the existing Supabase database, Auth, private Storage and Realtime, and the existing Brevo SMTP configuration. Add the new site's exact `/dashboard` and `/reset-password` redirects in Supabase Auth and use the new origin as Site URL after deployment succeeds. Preserve old Netlify redirect entries for existing email links. Users need to sign in again on the new origin; browser sessions do not transfer between domains.
+
+Migration commits use `[skip netlify]` to avoid spending Netlify credits. Existing Netlify hosting remains available during the migration. Update homepage canonical URL, sitemap and robots sitemap URL together when switching the primary origin. Search Console verification/indexing is separate for the new origin.
+
 GitHub repository: `https://github.com/hussainmahmooth/collabix_web_application`.
 Existing Netlify project: `teamprojectcolla`, site ID `cfbbd130-f7ed-4e49-8d69-35088e965884`, production branch `master`.
 Supabase project: `mephxqyntqqoxfnygavy` (existing Collabix project, additive ResearchFlow tables).

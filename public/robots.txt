@@ -16,4 +16,4 @@ Disallow: /register
 Disallow: /reset-password
 Disallow: /*?invite=
 
-Sitemap: https://teamprojectcolla.netlify.app/sitemap.xml
+Sitemap: https://researchflow-collabix.pages.dev/sitemap.xml
