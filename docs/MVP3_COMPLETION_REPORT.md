@@ -4,7 +4,7 @@ Date: 21 October 2026 (Asia/Colombo). Developer attribution: Developed by Micro 
 
 ## Release status
 
-Implementation and local/cloud-backend verification are complete. Cloudflare production publication/verification is the final release step; the publication record will be added below after the deployed bundle is checked. Existing accounts, workspaces, six-team-member plus one-supervisor capacity and MVP 1/2 modules are retained. No new paid service, GitHub token or email credential is required.
+MVP 3 is published and verified at https://researchflow-collabix.pages.dev. Cloudflare production deployment `97dd74e2-d480-4bd4-b47e-bf3755040e03` successfully built source commit `5a726c0b86764efa3f8c6a5588485bf2267d9ba0` in 36 seconds and published at approximately 01:12 on 21 October 2026 (Asia/Colombo). Existing accounts, workspaces, six-team-member plus one-supervisor capacity and MVP 1/2 modules are retained. No paid plan, GitHub token or new email credential was required. Both source release commits include `[skip netlify]`.
 
 ## Features completed
 
@@ -60,8 +60,10 @@ Applied cloud versions match checked-in filenames:
 - `node scripts/test-mvp3-live.mjs`: passed against the real Supabase backend with three disposable confirmed identities, individual password sessions and no email. Verified actual Realtime notification delivery, private upload/version persistence, exact downloaded CSV bytes, server-enforced 60-second JWT expiry, denied direct/outsider/anonymous/revoked access and issuance logging.
 - Disposable cleanup verified zero Auth identities, zero test workspace and zero Storage objects. An empty client removal response did not remove the denied-read object; privileged Storage API cleanup removed the exact synthetic CSV, then the normal Edge Function was restored. Temporary credentials/provisioning files were removed locally.
 - Generated stress PDF: nine A4 pages (595.28 × 841.89 points), attribution on every page. First/last pages rendered with PDFium and visually inspected: repeated headings, page numbers, safe wrapping and no clipped content. Desktop report screen also inspected.
-- Supabase security advisor: no new ResearchFlow findings at the first scan; a final release scan is recorded with the deployment check. Existing legacy warnings remain documented in SECURITY.md.
+- Supabase security advisor: no new ResearchFlow findings in the final scan, including after the writer guard. Every `rf_` table has RLS; anonymous workflow execution is false; the dataset bucket is private; the existing workspace audit trigger is enabled. Existing legacy warnings remain documented in SECURITY.md.
 - Final dataset-writer review tightened permitted readers to read-only: the MVP 3 SQL suite passed again with explicit denied reader upload/external-version assertions. Typecheck, lint and production build passed again after the matching UI condition.
+- Published-site verification: root and all seven new routes returned HTTP 200 with the expected CSP. The live entry `index-A3cKtiDh.js` references `ResearchView-Dv_1pZoG.js`, matching the final built source. All six leader/member/supervisor desktop/mobile production UI cases passed with synthetic backend fixtures, including real PDF downloads under production CSP. Five passed in the initial production run; the mobile leader case initially exceeded a 20-second network navigation limit and passed when rerun with a 60-second navigation allowance. This test-only timeout change does not alter the deployed app.
+- The existing signed-in real workspace opened Research Papers with its actual workspace identity, correct leader controls, empty-paper state, notification count and permanent footer; no research records were fabricated during that check. Production and app screenshots were saved in the task visualization folder. Post-release documentation/test-timeout commits skip CI and do not change the deployed application bundle.
 
 ## Recommended next steps
 

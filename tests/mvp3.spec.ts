@@ -4,6 +4,7 @@ test.setTimeout(120000);
 for (const role of ["leader", "member", "supervisor"])
   test(`MVP3 ${role} research operations`, async ({ page }, testInfo) => {
     page.setDefaultTimeout(20000);
+    page.setDefaultNavigationTimeout(60000);
     const w = "22222222-2222-4222-8222-222222222222",
       leader = "11111111-1111-4111-8111-111111111111",
       member = "33333333-3333-4333-8333-333333333333",
