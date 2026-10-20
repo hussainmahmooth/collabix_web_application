@@ -53,6 +53,8 @@ select set_config('request.jwt.claim.sub',current_setting('rf.test.leader'),true
 select set_config('rf.test.version',(public.rf_operations('dataset_version',jsonb_build_object('workspace_id',current_setting('rf.test.w'),'dataset_id',current_setting('rf.test.dataset'),'kind','Dataset','path',current_setting('rf.test.path'),'name','synthetic.csv'))->>'id'),true);
 select set_config('request.jwt.claim.sub',current_setting('rf.test.member'),true);
 select pg_temp.assert_true((select count(*)=1 from public.rf_dataset_versions where id=current_setting('rf.test.version')::uuid),'explicit dataset reader can see version');
+select pg_temp.must_fail(format('select public.rf_operations(''dataset_version'',%L::jsonb)',jsonb_build_object('workspace_id',current_setting('rf.test.w'),'dataset_id',current_setting('rf.test.dataset'),'kind','Dataset','external_url','https://example.invalid/forged-version','name','Reader may not append')));
+select pg_temp.assert_true(not rf_private.dataset_upload(current_setting('rf.test.w')||'/'||current_setting('rf.test.dataset')||'/'||current_setting('rf.test.member')||'/'||gen_random_uuid()||'.csv'),'read permission alone does not allow raw upload');
 select pg_temp.assert_true((select count(*)=0 from storage.objects where name=current_setting('rf.test.path')),'cannot sign private dataset without logged authorization');
 select public.rf_operations('dataset_download',jsonb_build_object('workspace_id',current_setting('rf.test.w'),'id',current_setting('rf.test.version')));
 select pg_temp.assert_true((select count(*)=1 from public.rf_dataset_access_events where version_id=current_setting('rf.test.version')::uuid),'download issuance logged');

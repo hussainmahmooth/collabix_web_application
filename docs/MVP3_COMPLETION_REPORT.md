@@ -34,6 +34,7 @@ Applied cloud versions match checked-in filenames:
 2. `20261020185747_mvp3_workflow_guards.sql`: row-dependent authorization checks, permission evidence before raw-data authorization, dataset metadata validation and independent linked-draft review.
 3. `20261020191305_mvp3_server_downloads.sql`: remove browser Storage SELECT/signing; server-only signed download path.
 4. `20261020192542_mvp3_dataset_history.sql`: private immutable metadata/permission snapshots.
+5. `20261020194026_mvp3_dataset_writer_boundary.sql`: permitted readers remain read-only; only leaders, dataset creators/custodians and assigned researchers may upload/append versions. Guards cover raw and external versions independently of UI.
 
 `supabase/schema.sql` includes these changes. New public tables use the existing `rf_` namespace, workspace-scoped RLS and denied direct browser DML. No existing task, document, review or milestone entity is duplicated. Array membership is checked by guarded workflows and relationships use composite workspace foreign keys.
 
@@ -43,7 +44,7 @@ Applied cloud versions match checked-in filenames:
 
 - `src/research/`: `ResearchView.tsx`, `Papers.tsx`, `Datasets.tsx`, `Notifications.tsx`, `Analytics.tsx`, `Reports.tsx`, `Github.tsx`, `Timeline.tsx`, `PaperReviewQueue.tsx`, `TaskResearchLinks.tsx`, `Forms.tsx`, `model.ts`, `pdfReports.ts`, `model.test.ts`, `research.css`.
 - Integration: `src/App.tsx`, `src/WorkspaceView.tsx`, `src/collaboration/Reviews.tsx`, `public/robots.txt`, `.gitignore`, `package.json`, `package-lock.json`.
-- Backend: the four migrations above, `supabase/schema.sql`, `supabase/tests/mvp3.sql`, `supabase/functions/rf-dataset-download/index.ts`, `supabase/functions/rf-dataset-download/deno.json`.
+- Backend: the five migrations above, `supabase/schema.sql`, `supabase/tests/mvp3.sql`, `supabase/functions/rf-dataset-download/index.ts`, `supabase/functions/rf-dataset-download/deno.json`.
 - Verification: `tests/mvp3.spec.ts`, `scripts/test-mvp3-live.mjs`. Synthetic credentials/test artifacts are ignored and never committed.
 - Documentation: README, PRD, SRS, ARCHITECTURE, DATABASE_SCHEMA, SECURITY, IMPLEMENTATION_PLAN, TEST_PLAN, USER_GUIDE, DEPLOYMENT, MVP3_DESIGN and this report.
 
@@ -60,6 +61,7 @@ Applied cloud versions match checked-in filenames:
 - Disposable cleanup verified zero Auth identities, zero test workspace and zero Storage objects. An empty client removal response did not remove the denied-read object; privileged Storage API cleanup removed the exact synthetic CSV, then the normal Edge Function was restored. Temporary credentials/provisioning files were removed locally.
 - Generated stress PDF: nine A4 pages (595.28 × 841.89 points), attribution on every page. First/last pages rendered with PDFium and visually inspected: repeated headings, page numbers, safe wrapping and no clipped content. Desktop report screen also inspected.
 - Supabase security advisor: no new ResearchFlow findings at the first scan; a final release scan is recorded with the deployment check. Existing legacy warnings remain documented in SECURITY.md.
+- Final dataset-writer review tightened permitted readers to read-only: the MVP 3 SQL suite passed again with explicit denied reader upload/external-version assertions. Typecheck, lint and production build passed again after the matching UI condition.
 
 ## Recommended next steps
 

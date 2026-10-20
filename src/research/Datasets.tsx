@@ -244,16 +244,19 @@ export default function Datasets() {
             Retention due: {target.retention_date || "Not recorded"} · Readiness
             checkpoint: {target.checkpoint_date || "Not recorded"}
           </p>
-          {!supervisor && (
-            <Button
-              onClick={() => {
-                setSelected(null);
-                setUpload(target);
-              }}
-            >
-              Add version or evidence
-            </Button>
-          )}
+          {!supervisor &&
+            (leader ||
+              target.created_by === userId ||
+              target.assignee_id === userId) && (
+              <Button
+                onClick={() => {
+                  setSelected(null);
+                  setUpload(target);
+                }}
+              >
+                Add version or evidence
+              </Button>
+            )}
           <ul className="research-list">
             {data.datasetVersions
               .filter((v) => v.dataset_id === target.id)

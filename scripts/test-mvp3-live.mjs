@@ -36,8 +36,13 @@ try {
   const { leader, reader, outsider } = clients;
   if (process.argv.includes("--cleanup-files")) {
     for (const upload of f.uploads || []) {
-      const removed=ok(await leader.storage.from("researchflow-datasets").remove([upload]));
-      assert.ok(removed?.length,"No objects removed: dataset client reads are disabled; use privileged Storage API cleanup for these disposable bytes");
+      const removed = ok(
+        await leader.storage.from("researchflow-datasets").remove([upload]),
+      );
+      assert.ok(
+        removed?.length,
+        "No objects removed: dataset client reads are disabled; use privileged Storage API cleanup for these disposable bytes",
+      );
     }
     console.log("PASS: disposable dataset bytes removed");
   } else {
@@ -108,13 +113,11 @@ try {
       ]);
     await timeout(ready, "Realtime readiness");
     ok(
-      await leader
-        .from("rf_tasks")
-        .insert({
-          workspace_id: w,
-          title: "Synthetic assignment",
-          assignee_id: f.users.find((u) => u.role === "reader").id,
-        }),
+      await leader.from("rf_tasks").insert({
+        workspace_id: w,
+        title: "Synthetic assignment",
+        assignee_id: f.users.find((u) => u.role === "reader").id,
+      }),
     );
     await timeout(event, "Realtime notification");
     const d = await act(leader, "dataset_save", {

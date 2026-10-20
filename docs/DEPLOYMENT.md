@@ -41,7 +41,7 @@ No new frontend environment variables or external services are required. The mig
 Retain version/review/audit records. Backups, retention, orphan-upload maintenance and storage quota monitoring require operational ownership; no scheduled cleanup worker or irreversible document purge is enabled by this release. Signed links last 60 seconds. New files are limited to 20 MB; large-dataset hosting is outside this document module.
 
 ## MVP 3 configuration
-Apply the four additive MVP 3 migrations before the frontend. Deploy `supabase/functions/rf-dataset-download/index.ts` with `deno.json`; supply `import_map_path: deno.json` explicitly when updating through MCP. The function uses default Supabase server environment variables SUPABASE_URL, SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY. None belong in new frontend variables. The browser still uses only its existing project URL and publishable key.
+Apply the five additive MVP 3 migrations before the frontend. Deploy `supabase/functions/rf-dataset-download/index.ts` with `deno.json`; supply `import_map_path: deno.json` explicitly when updating through MCP. The function uses default Supabase server environment variables SUPABASE_URL, SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY. None belong in new frontend variables. The browser still uses only its existing project URL and publishable key.
 
 Legacy gateway verify_jwt is false because the handler authenticates every data request through Auth getUser plus caller-scoped RPC/RLS. Do not remove that authentication. Browser dataset SELECT/signing is disabled; the function signs authorized paths for 60 seconds. CORS allows the current Cloudflare/retained Netlify origins and localhost:5173. Additional preview/custom origins require deliberate configuration.
 
