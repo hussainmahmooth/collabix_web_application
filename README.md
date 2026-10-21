@@ -40,3 +40,6 @@ MVP 3 adds paper sections/reviews/reference metadata, restricted dataset governa
 Start with `docs/PRD.md`, `docs/SRS.md`, `docs/ARCHITECTURE.md`, `docs/DATABASE_SCHEMA.md`, `docs/SECURITY.md`, `docs/IMPLEMENTATION_PLAN.md`, `docs/API.md`, `docs/TEST_PLAN.md`, `docs/USER_GUIDE.md` and `docs/DEPLOYMENT.md`.
 
 This release has not been certified production ready; complete real-email two-account acceptance and operational checks before broad use.
+
+## MVP 4 verification
+Production audit, recovery procedures and release evidence are in [PRODUCTION_AUDIT](docs/PRODUCTION_AUDIT.md), [BACKUP_AND_RECOVERY](docs/BACKUP_AND_RECOVERY.md) and [MVP4_COMPLETION_REPORT](docs/MVP4_COMPLETION_REPORT.md). Cloudflare remains the sole deployment target for this release. Use the existing publishable-key variable; no new credentials are required. Confidential institutional rollout remains gated on inbox acceptance and an isolated restore drill.

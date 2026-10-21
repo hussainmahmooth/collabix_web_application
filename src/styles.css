@@ -403,6 +403,22 @@ footer strong {
 .dialog-content form > .button {
   width: 100%;
 }
+.release-recovery {
+  width: min(560px, 100%);
+  margin: auto;
+  padding: 32px;
+}
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 .auth-page {
   min-height: 100dvh;
   background: var(--surface);
@@ -2061,9 +2077,14 @@ footer strong {
   .breadcrumb {
     font-size: 9px;
     gap: 9px;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
   }
   .topbar-actions {
     gap: 5px;
+    flex-shrink: 0;
   }
   .search input {
     width: 80px;

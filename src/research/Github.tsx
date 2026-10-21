@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "../components/ui";
 import { Editor, choices } from "./Forms";
 import { emptyFilters, githubUrl, localDay } from "./model";
-import { ResearchFilters } from "./Analytics";
+import { ResearchFilters } from "./ResearchFilters";
 import { useResearch } from "./ResearchView";
 export default function Github() {
   const c = useResearch();

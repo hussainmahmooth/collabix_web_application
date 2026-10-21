@@ -3,7 +3,7 @@ import { Button } from "../components/ui";
 import { check, supabase } from "../lib/supabase";
 import { loadCollaboration } from "../collaboration/model";
 import { loadResearch, emptyFilters, rows } from "./model";
-import { ResearchFilters } from "./Analytics";
+import { ResearchFilters } from "./ResearchFilters";
 import { pdfBytes, reportDefinition, reportTypes } from "./pdfReports";
 import { useResearch } from "./ResearchView";
 import type { Task, Phase } from "../lib/types";

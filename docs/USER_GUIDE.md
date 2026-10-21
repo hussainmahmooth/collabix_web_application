@@ -55,3 +55,6 @@ On phones, use **Open navigation** to reach the new modules. MVP 3 modules are d
 **GitHub Tracking:** leaders register `https://github.com/owner/repository`; members link issue, PR, commit or branch URLs to tasks. Task details shows related links. No API token or synchronization is needed or claimed.
 
 **Research Timeline:** the workspace selector switches independent projects. Filter dates or papers; entries reuse existing phases/milestones, paper submission/publication dates, section-review deadlines and dataset checkpoints. Unset dates are omitted. On phones, scroll the navigation menu to reach all modules.
+
+## Recovery and operating limits
+If ResearchFlow displays a reload recovery screen, reload and re-enter any unsaved form changes. If a data request fails, use Retry after connectivity returns; don't assume an incomplete list means records were deleted. Leaders rename teams in Settings → Workspace Settings. Capacity remains six team members including leaders plus one supervisor. Do not upload confidential institutional datasets until your administrator has accepted the security findings and demonstrated backup restoration. Report unavailable signed links by requesting a new authorized download; links expire after 60 seconds.

@@ -26,6 +26,7 @@ import {
   History,
 } from "lucide-react";
 import { supabase, check } from "./lib/supabase";
+import { readPages } from "./lib/pagination";
 import type {
   Workspace,
   Member,
@@ -93,10 +94,17 @@ export default function App() {
     localStorage.setItem("rf-theme", dark ? "dark" : "light");
   }, [dark]);
   useEffect(() => {
+    let mounted = true;
     supabase.auth.getSession().then(({ data, error }) => {
+      if (!mounted) return;
       setSession(data.session);
       if (error) setError(error.message);
       setReady(true);
+    }).catch(() => {
+      if (mounted) {
+        setError("Unable to restore your session. Please sign in again.");
+        setReady(true);
+      }
     });
     const { data } = supabase.auth.onAuthStateChange((event, s) => {
       setSession(s);
@@ -107,7 +115,7 @@ export default function App() {
         localStorage.removeItem("rf-workspace");
       }
     });
-    return () => data.subscription.unsubscribe();
+    return () => { mounted = false; data.subscription.unsubscribe(); };
   }, [client]);
   useEffect(() => {
     if (!notice) return;
@@ -160,11 +168,13 @@ export default function App() {
           .select("*")
           .eq("workspace_id", w.id)
           .order("position"),
-        supabase
+        readPages<Task>((from, to) => supabase
           .from("rf_tasks")
           .select("*")
           .eq("workspace_id", w.id)
-          .order("created_at", { ascending: false }),
+          .order("created_at", { ascending: false })
+          .order("id")
+          .range(from, to)),
         supabase
           .from("rf_audit_events")
           .select("*")
@@ -183,7 +193,7 @@ export default function App() {
         workspace: w,
         members: memberRows,
         phases: check(results[0]) as Phase[],
-        tasks: check(results[1]) as Task[],
+        tasks: results[1],
         audit: check(results[2]) as Audit[],
         invitations: check(results[3]) as Invitation[],
       };

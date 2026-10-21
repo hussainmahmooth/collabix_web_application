@@ -49,3 +49,6 @@ The current single task assignee is explicit; a many-to-many assignment table is
 - `rf_report_events`: personal export initiation without exported contents.
 
 Every public table has RLS, workspace indexes and revoked direct browser DML; composite foreign keys prevent foreign-team links. The private expiring issuance-grant table is retained internally but no Storage client read policy consumes it. Only the authenticated Edge Function signs dataset bytes. Dataset history starts when its migration is installed; earlier snapshots are not fabricated. The five MVP 3 migrations and `supabase/tests/mvp3.sql` are the executable specification.
+
+## MVP 4 catalog verification
+Cloud history contains the same eleven migration versions as supabase/migrations. All 37 ResearchFlow public tables have RLS; all three Storage buckets remain private. Four rolled-back integration suites pass. No schema migration or destructive database operation was needed for MVP 4. Existing composite keys and role/ACL guards remain. Performance advisor still identifies missing foreign-key indexes and some per-row Auth expressions; these are documented rather than claiming unmeasured speedups. A fresh-environment migration replay and full backup restoration have not been executed in this release.

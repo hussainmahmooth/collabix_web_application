@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, lazy, useContext, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import type { WorkspaceData } from "../App";
@@ -20,10 +20,10 @@ import {
 import Papers from "./Papers";
 import Datasets from "./Datasets";
 import Notifications from "./Notifications";
-import Analytics from "./Analytics";
+const Analytics = lazy(() => import("./Analytics"));
 import Github from "./Github";
 import Timeline from "./Timeline";
-import Reports from "./Reports";
+const Reports = lazy(() => import("./Reports"));
 import "./research.css";
 interface Props {
   workspace: WorkspaceData;
