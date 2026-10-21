@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FileText, Plus, Upload, LockKeyhole } from "lucide-react";
+import { FileText, Plus, Upload, LockKeyhole, Trash2, RotateCcw } from "lucide-react";
 import { Button, Empty, Modal } from "../components/ui";
 import {
   acceptFiles,
@@ -17,6 +17,8 @@ export default function Documents() {
   const [sort, setSort] = useState("newest");
   const [status, setStatus] = useState("");
   const [archived, setArchived] = useState(false);
+  const [trash, setTrash] = useState(false);
+  const [confirmTrash, setConfirmTrash] = useState(false);
   const [create, setCreate] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [access, setAccess] = useState(false);
@@ -36,7 +38,7 @@ export default function Documents() {
   const docs = data.documents
     .filter(
       (x) =>
-        x.archived === archived &&
+        (trash ? leader && !!x.trashed_at : !x.trashed_at && x.archived === archived) &&
         x.title.toLowerCase().includes(query.toLowerCase()) &&
         (!folder || x.folder_id === folder) &&
         (!status || reviewStatus(versions(x.id)[0]) === status),
@@ -160,13 +162,22 @@ export default function Documents() {
           />
           Archived
         </label>
-        {!supervisor && (
+        {leader && (
+          <label className="collab-check">
+            <input type="checkbox" checked={trash} onChange={(e) => {
+              setTrash(e.target.checked); setSelected(null); setQuery(""); setFolder(""); setStatus("");
+            }} />
+            Trash
+          </label>
+        )}
+        {!supervisor && !trash && (
           <Button onClick={() => setCreate(true)}>
             <Plus size={16} />
             Upload document
           </Button>
         )}
       </div>
+      {trash && <p className="research-notice">Only leaders can view Trash. Deleted documents, files and review history are preserved. Restore a document to make it available again.</p>}
       <div className="collab-grid">
         {docs.map((d) => {
           const v = versions(d.id)[0];
@@ -178,7 +189,7 @@ export default function Documents() {
                 {d.restricted && (
                   <LockKeyhole size={16} aria-label="Restricted document" />
                 )}
-                <Status>{reviewStatus(v)}</Status>
+              <Status>{d.trashed_at ? "In Trash" : reviewStatus(v)}</Status>
               </div>
               <h2>
                 <button
@@ -217,8 +228,8 @@ export default function Documents() {
         })}
       </div>
       {!docs.length && (
-        <Empty title="No documents found">
-          Upload your first document, or change the folder and search filters.
+        <Empty title={trash ? "Trash is empty" : "No documents found"}>
+          {trash ? "Deleted documents will appear here for leaders to restore." : "Upload your first document, or change the folder and search filters."}
         </Empty>
       )}
       {create && (
@@ -310,16 +321,30 @@ export default function Documents() {
           onClose={() => {
             setSelected(null);
             setAccess(false);
+            setConfirmTrash(false);
           }}
         >
           <div className="collab-toolbar">
-            {(leader || current.created_by === userId) && (
+            {!current.trashed_at && (leader || current.created_by === userId) && (
               <Button variant="outline" onClick={() => setAccess(!access)}>
                 <LockKeyhole size={14} />
                 Manage access
               </Button>
             )}
-            {leader && !current.archived && (
+            {leader && !current.trashed_at && (
+              <Button variant="outline" disabled={busy} onClick={() => setConfirmTrash(true)}>
+                <Trash2 size={14} /> Delete document
+              </Button>
+            )}
+            {leader && current.trashed_at && (
+              <Button disabled={busy} onClick={() => void run(async () => {
+                await act("document_restore", { id: current.id });
+                setSelected(null); setConfirmTrash(false); setTrash(false); setArchived(current.archived);
+              }, "Document restored; files and review history preserved")}>
+                <RotateCcw size={14} /> Restore document
+              </Button>
+            )}
+            {leader && !current.archived && !current.trashed_at && (
               <Button
                 variant="ghost"
                 disabled={busy}
@@ -333,12 +358,30 @@ export default function Documents() {
                 Archive document
               </Button>
             )}
+            {leader && current.archived && !current.trashed_at && (
+              <Button variant="outline" disabled={busy} onClick={() => void run(async () => {
+                await act("document_unarchive", { id: current.id });
+                setSelected(null); setArchived(false);
+              }, "Document returned to active documents")}>Unarchive document</Button>
+            )}
           </div>
+          {confirmTrash && !current.trashed_at && (
+            <section className="error-box" role="alert">
+              <h3>Move this document to Trash?</h3>
+              <p>“{current.title}” will be hidden from members and lecturers, including its review submissions. Files and decisions are preserved. A leader can restore it from Trash. Already-issued links may work for up to 60 seconds.</p>
+              <Button disabled={busy} onClick={() => void run(async () => {
+                await act("document_trash", { id: current.id });
+                setSelected(null); setConfirmTrash(false);
+              }, "Document moved to Trash; a leader can restore it")}>Move to Trash</Button>
+              <Button variant="ghost" disabled={busy} onClick={() => setConfirmTrash(false)}>Cancel deletion</Button>
+            </section>
+          )}
+          {current.trashed_at && <p role="status">In Trash. Restore this document before uploading, commenting or requesting a review.</p>}
           {access ? (
             accessForm(current)
           ) : (
             <>
-              {!supervisor && !current.archived && (
+              {!supervisor && !current.archived && !current.trashed_at && (
                 <form
                   className="collab-subform"
                   onSubmit={(e) => {
@@ -379,6 +422,7 @@ export default function Documents() {
                   <Files files={data.files.filter((f) => f.id === v.file_id)} />
                   {!supervisor &&
                     !current.archived &&
+                    !current.trashed_at &&
                     (leader || v.author_id === userId) &&
                     reviewStatus(v) !== "Submitted for Review" && (
                       <Button
@@ -427,7 +471,7 @@ export default function Documents() {
                     <p className="collab-body">{c.body}</p>
                   </article>
                 ))}
-              <form
+              {!current.trashed_at && <form
                 onSubmit={(e) => {
                   e.preventDefault();
                   const form = e.currentTarget;
@@ -446,7 +490,7 @@ export default function Documents() {
                   <textarea name="body" required maxLength={5000} />
                 </label>
                 <Button disabled={busy}>Post comment</Button>
-              </form>
+              </form>}
             </>
           )}
         </Modal>

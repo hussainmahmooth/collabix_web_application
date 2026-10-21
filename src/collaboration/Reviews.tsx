@@ -12,6 +12,7 @@ export default function Reviews() {
   const person = usePerson();
   const [selected, setSelected] = useState<string | null>(null);
   const [filter, setFilter] = useState("pending");
+  const [editing, setEditing] = useState(false);
   const projects = useQuery({
     queryKey: ["supervisor-projects", userId],
     queryFn: async () =>
@@ -38,6 +39,9 @@ export default function Reviews() {
         )?.title || "Document version";
   const s = data.submissions.find((x) => x.id === selected);
   const v = data.versions.find((x) => x.id === s?.version_id);
+  const documentFor = (submission: Submission) => data.documents.find(d =>
+    d.id === data.versions.find(version => version.id === submission.version_id)?.document_id);
+  const inTrash = !!(s && documentFor(s)?.trashed_at);
   const ownsSubmission =
     s?.requested_by === userId ||
     (supervisor &&
@@ -46,10 +50,17 @@ export default function Reviews() {
         data.documents.find((d) => d.id === v.document_id)?.created_by ===
           userId));
   const submissions = data.submissions
-    .filter((x) => filter === "all" || x.status === "Submitted for Review")
+    .filter((x) => filter === "all" || (!documentFor(x)?.trashed_at && x.status === "Submitted for Review"))
     .sort((a, b) => b.created_at.localeCompare(a.created_at));
   return (
     <>
+      {!workspace.members.some(m => m.role === "supervisor") && (
+        <section className="panel collab-panel" role="status">
+          <h2>No lecturer / supervisor assigned</h2>
+          <p>Academic feedback is recorded by an invited Supervisor account. Leaders can record internal reviews, but cannot grant academic approval. Invite your lecturer using the Supervisor role and ask them to sign in with their own verified email.</p>
+          {leader && <Link to="/team">Manage team and invite a supervisor</Link>}
+        </section>
+      )}
       {(supervisor || leader) && (
         <PaperReviewQueue workspace={workspace.workspace.id} user={userId} />
       )}
@@ -162,9 +173,10 @@ export default function Reviews() {
               </small>
             )}
             <p>Academic: {r.status}</p>
+            {documentFor(r)?.trashed_at && <p>Document in Trash — restore it in Documents before reviewing.</p>}
             <p>Internal: {r.internal_status}</p>
             <Stamp user={r.requested_by} at={r.created_at} />
-            <Button variant="outline" onClick={() => setSelected(r.id)}>
+            <Button variant="outline" onClick={() => {setSelected(r.id); setEditing(false);}}>
               Open submission
             </Button>
           </article>
@@ -198,6 +210,33 @@ export default function Reviews() {
             </p>
           )}
           <h3>Review decisions</h3>
+          {s.correction_reason && <p><strong>Withdrawal reason:</strong> {s.correction_reason}</p>}
+          {s.replaces_submission_id && <p>This is a corrected submission. The original request is preserved in All submissions and decisions.</p>}
+          {s.status === "Withdrawn" && <p role="status">This request was withdrawn. Its original document and recorded decisions remain in history.</p>}
+          {!inTrash && s.status === "Submitted for Review" && !supervisor && (leader || s.requested_by === userId) && (
+            <section className="collab-subform">
+              <Button variant="outline" onClick={() => setEditing(!editing)}>Edit or withdraw submission</Button>
+              {editing && <form onSubmit={(e) => {
+                e.preventDefault(); const f=new FormData(e.currentTarget);
+                void run(async () => {
+                  await act(String(f.get("action")), {
+                    submission_id:s.id, reason:String(f.get("reason")),
+                    ...(s.version_id ? {version_id:f.get("target")} : {phase_id:f.get("target")}),
+                  }); setSelected(null); setEditing(false);
+                }, "Submission corrected; original request preserved in history");
+              }}>
+                <p>Replace a mistaken pending request or withdraw it. Recorded decisions and the original request are preserved. Upload a corrected file in Documents first if needed.</p>
+                <label>Submission action<select name="action" required><option value="review_correct">Replace with corrected submission</option><option value="review_withdraw">Withdraw without replacement</option></select></label>
+                <label>{s.version_id ? "Correct document version" : "Correct research phase"}<select name="target" defaultValue="">
+                  <option value="">Choose a replacement (not needed for withdrawal)</option>
+                  {s.version_id ? data.versions.filter(version=>version.id!==s.version_id && !data.documents.find(doc=>doc.id===version.document_id)?.archived && !data.documents.find(doc=>doc.id===version.document_id)?.trashed_at).map(version=><option key={version.id} value={version.id}>{data.documents.find(doc=>doc.id===version.document_id)?.title || "Document"} — Version {version.version}</option>) : workspace.phases.map(phase=><option key={phase.id} value={phase.id}>{phase.name}</option>)}
+                </select></label>
+                <label>Reason for correction<textarea name="reason" required maxLength={2000}/></label>
+                <Button disabled={busy}>Save submission correction</Button>
+              </form>}
+            </section>
+          )}
+          {inTrash && <p role="status">This document is in Trash. A leader must restore it in Documents before any new review decision can be recorded.</p>}
           {data.reviews
             .filter((r) => r.submission_id === s.id)
             .map((r) => (
@@ -210,6 +249,8 @@ export default function Reviews() {
               </article>
             ))}
           {(supervisor || leader) &&
+            !inTrash &&
+            s.status !== "Withdrawn" &&
             !ownsSubmission &&
             !data.reviews.some(
               (r) =>

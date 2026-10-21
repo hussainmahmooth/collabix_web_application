@@ -27,6 +27,7 @@ export interface ResearchDocument {
   created_by: string;
   restricted: boolean;
   archived: boolean;
+  trashed_at?: string | null;
   phase_id: string | null;
   task_id: string | null;
   updated_at: string;
@@ -90,6 +91,10 @@ export interface MeetingAction {
   task_id: string | null;
 }
 export interface Submission {
+  correction_reason?: string | null;
+  withdrawn_at?: string | null;
+  withdrawn_by?: string | null;
+  replaces_submission_id?: string | null;
   id: string;
   version_id: string | null;
   phase_id: string | null;

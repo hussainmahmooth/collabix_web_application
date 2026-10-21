@@ -154,6 +154,10 @@ for (const role of ["leader", "member", "supervisor"])
             user_id,
           }));
         }
+        if (action === "document_trash") Object.assign(find("rf_documents"), { trashed_at: new Date().toISOString() });
+        if (action === "document_restore") Object.assign(find("rf_documents"), { trashed_at: null });
+        if (action === "document_archive") Object.assign(find("rf_documents"), { archived: true });
+        if (action === "document_unarchive") Object.assign(find("rf_documents"), { archived: false });
         if (action === "document_comment")
           id = record("rf_document_comments", { ...p, author_id: user });
         if (action === "review_request")
@@ -167,6 +171,15 @@ for (const role of ["leader", "member", "supervisor"])
           id = record("rf_reviews", { ...p, reviewer_id: user });
           const s = state.rf_submissions.find((s) => s.id === p.submission_id)!;
           s[p.kind === "Academic" ? "status" : "internal_status"] = p.decision;
+        }
+        if (action === "review_correct" || action === "review_withdraw") {
+          const original = state.rf_submissions.find(s=>s.id===p.submission_id)!;
+          Object.assign(original, {status:"Withdrawn", correction_reason:p.reason, withdrawn_at:new Date().toISOString(), withdrawn_by:user});
+          id = String(original.id);
+          if (action === "review_correct") id=record("rf_submissions", {
+            version_id:p.version_id || null, phase_id:p.phase_id || null,
+            requested_by:user, status:"Submitted for Review", internal_status:"Submitted for Review", replaces_submission_id:original.id,
+          });
         }
         if (action === "meeting_save") {
           id = record("rf_meetings", {
@@ -319,8 +332,50 @@ for (const role of ["leader", "member", "supervisor"])
             { exact: true },
           ),
       ).toBeVisible();
-      await page.getByRole("button", { name: "Close dialog" }).click();
+      if (role === "leader") {
+        await page.getByRole("button", { name: "Delete document", exact: true }).click();
+        await expect(page.getByRole("heading", { name: "Move this document to Trash?" })).toBeVisible();
+        await page.getByRole("button", { name: "Cancel deletion" }).click();
+        expect(state.rf_documents[0].trashed_at).toBeFalsy();
+        await page.getByRole("button", { name: "Archive document", exact: true }).click();
+        await page.getByRole("checkbox", { name: "Archived", exact: true }).check();
+        await page.getByRole("button", { name: "Open document", exact: true }).click();
+        await page.getByRole("button", { name: "Unarchive document", exact: true }).click();
+        await page.getByRole("button", { name: "Open document", exact: true }).click();
+        await page.getByRole("button", { name: "Delete document", exact: true }).click();
+        await page.getByRole("button", { name: "Move to Trash", exact: true }).click();
+        await expect(page.getByRole("heading", { name: "No documents found" })).toBeVisible();
+        await page.getByRole("checkbox", { name: "Trash", exact: true }).check();
+        await page.getByRole("button", { name: "Open document", exact: true }).click();
+        await expect(page.getByRole("button", { name: "Post comment", exact: true })).toHaveCount(0);
+        await expect(page.getByRole("button", { name: "Upload new version", exact: true })).toHaveCount(0);
+        await page.getByRole("button", { name: "Restore document", exact: true }).click();
+        await expect(page.getByRole("button", { name: "Open document", exact: true })).toBeVisible();
+        expect(state.rf_document_versions).toHaveLength(2);
+        expect(state.rf_submissions).toHaveLength(1);
+      } else {
+        await expect(page.getByRole("button", { name: "Delete document", exact: true })).toHaveCount(0);
+        await expect(page.getByRole("checkbox", { name: "Trash", exact: true })).toHaveCount(0);
+        await page.getByRole("button", { name: "Close dialog" }).click();
+      }
       await snapshot('documents');
+      await navigate("Supervisor Reviews");
+      await page.getByRole("button", {name:"Open submission",exact:true}).click();
+      await page.getByRole("button", {name:"Edit or withdraw submission",exact:true}).click();
+      await page.getByRole("combobox", {name:"Correct document version",exact:true}).selectOption(String(state.rf_document_versions[0].id));
+      await page.getByLabel("Reason for correction",{exact:true}).fill("Wrong version selected; use the intended draft.");
+      await page.getByRole("button",{name:"Save submission correction",exact:true}).click();
+      expect(state.rf_submissions.filter(s=>s.status==='Withdrawn')).toHaveLength(1);
+      expect(state.rf_submissions.filter(s=>s.status==='Submitted for Review')).toHaveLength(1);
+      await page.getByRole("button",{name:"Open submission",exact:true}).click();
+      await page.getByRole("button",{name:"Edit or withdraw submission",exact:true}).click();
+      await page.getByRole("combobox",{name:"Submission action",exact:true}).selectOption("review_withdraw");
+      await page.getByLabel("Reason for correction",{exact:true}).fill("Withdraw until the team has checked the draft.");
+      await page.getByRole("button",{name:"Save submission correction",exact:true}).click();
+      await expect(page.getByRole("heading",{name:"No matching review submissions",exact:true})).toBeVisible();
+      await page.getByRole("combobox",{name:"Review history",exact:true}).selectOption("all");
+      await expect(page.getByRole("button",{name:"Open submission",exact:true})).toHaveCount(2);
+      expect(state.rf_document_versions).toHaveLength(2);
       await navigate("Meetings");
       await page.getByRole("button", { name: "Schedule meeting" }).click();
       await page.getByLabel("Meeting title").fill("Research planning");
@@ -330,7 +385,7 @@ for (const role of ["leader", "member", "supervisor"])
       await page.getByRole("button", { name: "Save meeting" }).click();
       expect(state.rf_meetings[0].starts_at).toBe("2027-01-02T04:30:00.000Z");
       await page.getByRole("button", { name: "Meeting details" }).click();
-      await page.getByLabel("Record type").selectOption("Minutes");
+      await page.getByRole("combobox", {name:"Record type",exact:true}).selectOption("Minutes");
       await page
         .getByLabel("Meeting note")
         .fill("Agreed to compare two research methods.");
