@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { rows, type GithubLink, type Section } from "./model";
+import { loadResearch } from "./model";
 export default function TaskResearchLinks({
   workspace,
   task,
@@ -11,10 +11,7 @@ export default function TaskResearchLinks({
   const q = useQuery({
     queryKey: ["task-research-links", workspace, task],
     queryFn: async () => {
-      const [links, sections] = await Promise.all([
-        rows<GithubLink>("rf_github_links", workspace),
-        rows<Section>("rf_paper_sections", workspace),
-      ]);
+      const { links, sections } = await loadResearch(workspace);
       return {
         links: links.filter((l) => l.task_id === task),
         sections: sections.filter((s) => s.task_id === task),

@@ -1,4 +1,5 @@
 import { supabase, check } from "../lib/supabase";
+import { activeRecords } from "../lib/recordLifecycle";
 
 export interface Channel {
   id: string;
@@ -187,10 +188,14 @@ export async function loadCollaboration(
         rows.push(...page);
         if (page.length < 500) break;
       }
-      return [key, rows];
+      return [key, activeRecords(rows)];
     }),
   );
-  return Object.fromEntries(results) as unknown as CollaborationData;
+  const data = Object.fromEntries(results) as unknown as CollaborationData;
+  const meetingIds = new Set(data.meetings.map(m => m.id));
+  data.notes = data.notes.filter(n => meetingIds.has(n.meeting_id));
+  data.actions = data.actions.filter(a => meetingIds.has(a.meeting_id));
+  return data;
 }
 export async function collaborate(
   workspace_id: string,

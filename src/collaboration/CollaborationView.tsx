@@ -12,6 +12,7 @@ import Discussions from "./Discussions";
 import Meetings from "./Meetings";
 import Reviews from "./Reviews";
 import Announcements from "./Announcements";
+import RecordManager from "../components/RecordManager";
 import "./collaboration.css";
 interface Props {
   workspace: WorkspaceData;
@@ -176,6 +177,7 @@ export default function CollaborationView({
           </p>
         )}
         <div className="collaboration">
+          <RecordManager key={page} page={page} workspace={w} leader={role === "leader"} />
           {page === "documents" ? (
             <Documents />
           ) : page === "discussions" ? (

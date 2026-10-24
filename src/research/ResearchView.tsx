@@ -20,6 +20,7 @@ import {
 import Papers from "./Papers";
 import Datasets from "./Datasets";
 import Notifications from "./Notifications";
+import RecordManager from "../components/RecordManager";
 const Analytics = lazy(() => import("./Analytics"));
 import Github from "./Github";
 import Timeline from "./Timeline";
@@ -144,6 +145,7 @@ export default function ResearchView(props: Props) {
               {error}
             </p>
           )}
+          <RecordManager key={page} page={page} workspace={w} leader={c.leader} />
           {page === "papers" ? (
             <Papers />
           ) : page === "datasets" ? (

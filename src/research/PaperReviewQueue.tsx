@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { rows, type Section } from "./model";
+import { loadResearch } from "./model";
 export default function PaperReviewQueue({
   workspace,
   user,
@@ -11,7 +11,7 @@ export default function PaperReviewQueue({
   const q = useQuery({
     queryKey: ["paper-review-queue", workspace, user],
     refetchInterval: 30000,
-    queryFn: () => rows<Section>("rf_paper_sections", workspace),
+    queryFn: async () => (await loadResearch(workspace)).sections,
   });
   return (
     <section className="research-card">

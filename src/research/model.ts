@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { check, supabase } from "../lib/supabase";
+import { activeRecords } from "../lib/recordLifecycle";
 import type { Task } from "../lib/types";
 import { isOverdue } from "../lib/types";
 export interface Paper {
@@ -157,11 +158,11 @@ export async function rows<T>(table: string, w: string): Promise<T[]> {
           .range(n, n + 499),
       ) || [];
     result.push(...(page as T[]));
-    if (page.length < 500) return result;
+    if (page.length < 500) return activeRecords(result);
   }
 }
 export async function loadResearch(w: string): Promise<ResearchData> {
-  return Object.fromEntries(
+  const data = Object.fromEntries(
     await Promise.all(
       Object.entries(researchTables).map(async ([k, t]) => [
         k,
@@ -169,6 +170,12 @@ export async function loadResearch(w: string): Promise<ResearchData> {
       ]),
     ),
   ) as unknown as ResearchData;
+  const papers = new Set(data.papers.map(p=>p.id));
+  data.sections = data.sections.filter(s=>papers.has(s.paper_id));
+  data.references = data.references.filter(r=>papers.has(r.paper_id));
+  const repositories = new Set(data.repositories.map(r=>r.id));
+  data.links = data.links.filter(l=>repositories.has(l.repository_id));
+  return data;
 }
 export async function operate(
   w: string,

@@ -40,6 +40,7 @@ import { workspaceCapacity } from "./lib/capacity";
 import { CollaborationSummary } from "./collaboration/CollaborationView";
 import { ResearchSummary } from "./research/ResearchView";
 import TaskResearchLinks from "./research/TaskResearchLinks";
+import RecordManager from "./components/RecordManager";
 import {
   initials,
   isOverdue,
@@ -949,6 +950,7 @@ export default function WorkspaceView({
               </section>
             ))}
           </div>
+          <RecordManager page="phases" workspace={w.id} leader={leader} />
         </>
       ) : page === "team" ? (
         <>

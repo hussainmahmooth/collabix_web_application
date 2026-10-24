@@ -2346,3 +2346,11 @@ footer strong {
     scroll-behavior: auto !important;
   }
 }
+/* Shared CRUD controls wrap on narrow screens. */
+.record-manager { margin: 1rem 0; min-width: 0; }
+.record-controls { display:flex; gap:.75rem; align-items:center; flex-wrap:wrap; }
+.record-controls label { display:grid; gap:.35rem; max-width:100%; }
+.record-controls input, .record-controls select { max-width:100%; }
+.managed-record-list { list-style:none; padding:0; }
+.managed-record-list li { display:flex; justify-content:space-between; align-items:center; gap:1rem; padding:.8rem 0; border-bottom:1px solid var(--border); flex-wrap:wrap; }
+.managed-record-list li > div { min-width:0; overflow-wrap:anywhere; }

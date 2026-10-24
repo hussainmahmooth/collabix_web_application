@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { supabase, check } from "./lib/supabase";
 import { readPages } from "./lib/pagination";
+import { activeRecords } from "./lib/recordLifecycle";
 import type {
   Workspace,
   Member,
@@ -192,7 +193,7 @@ export default function App() {
       return {
         workspace: w,
         members: memberRows,
-        phases: check(results[0]) as Phase[],
+        phases: activeRecords(check(results[0]) as Phase[]),
         tasks: results[1],
         audit: check(results[2]) as Audit[],
         invitations: check(results[3]) as Invitation[],
@@ -202,6 +203,8 @@ export default function App() {
   async function refresh() {
     await client.invalidateQueries({ queryKey: ["workspaces"] });
     await client.invalidateQueries({ queryKey: ["workspace"] });
+    await client.invalidateQueries({ queryKey: ["managed-records"] });
+    await client.invalidateQueries({ queryKey: ["record-history"] });
   }
   async function mutate(
     action: () => Promise<unknown>,
