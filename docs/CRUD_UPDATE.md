@@ -33,7 +33,8 @@ Legacy authentication trigger and existing seven-person workspace capacity remai
 - CRUD suite covers all 14 managed record types, before/after history, invalid fields, cross-workspace denial, member/supervisor/outsider denial, parent guards, approved section/conversion protections, and dataset download/upload blocking/restoration.
 - Existing 28 unit tests pass. Production build and lint pass.
 - All 24 desktop/mobile browser cases passed (5.0 minutes): CRUD, workspace/capacity, collaboration and research workflows. The new CRUD cases exercise all 14 managed record types on both viewport sizes. API responses in browser cases are isolated fixtures; database authorization is tested independently by the live SQL suites.
-- Production deployment verification is recorded after release below.
+- Production source commit: `7d176f4` (`[skip netlify]`). At `2026-10-24T17:43:23.695Z`, all 21 Cloudflare routes returned HTTP 200 with the matching build entry `/assets/index-DKGzb8Sc.js`, CSP, nosniff and frame denial headers. The supplemental built-bundle secret-pattern scan passed; it is not an independent security certification.
+- Published-browser verification also passed on desktop and mobile (2 cases, 2.1 minutes), exercising all 14 record types with isolated API fixtures against the real deployed JavaScript/CSP. Screenshots were reviewed for both viewports. Real workspace records were not modified; live server permissions were verified separately through rolled-back SQL fixtures.
 
 ## Deliberate limits
 
