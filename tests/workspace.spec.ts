@@ -9,7 +9,7 @@ test(mode !== 'normal' ? `${mode} workspace enforces separate team and superviso
  const member={user_id:userId,role:mode==='viewer'?'member':'leader',responsibilities:'',rf_profiles:{full_name:'Test Researcher',skills:'Machine learning'}}
  let invitations = ['pending', 'accepted', 'expired'].map((status, i) => ({id:`invite-${i}`,email:`${status}@example.invalid`,role:'member',token:`token-${i}`,expires_at:new Date(Date.now()+(status==='expired'?-86400000:86400000)).toISOString(),accepted_at:status==='accepted'?new Date().toISOString():null}))
  const phase={id:'33333333-3333-4333-8333-333333333333',workspace_id:workspaceId,name:'Literature Review',description:'Build a grounded understanding of existing work.',objectives:'Compare reproducible forecasting approaches.',start_date:null,deadline:'2026-11-15',owner_id:userId,position:0,status:'In Progress',review_state:'Not requested'}
- const tasks: Record<string, unknown>[]=[]
+ const tasks: Record<string, unknown>[]=mode==='viewer'?[{id:'44444444-4444-4444-8444-444444444444',workspace_id:workspaceId,title:'Member-owned task',description:'Assigned member work',phase_id:phase.id,assignee_id:userId,status:'To Do',priority:'Medium',due_date:null,archived:false,created_at:new Date().toISOString(),updated_at:new Date().toISOString()}]:[]
  await page.addInitScript(({userId})=>{const project='mephxqyntqqoxfnygavy';localStorage.setItem(`sb-${project}-auth-token`,JSON.stringify({access_token:'test.ui.contract',refresh_token:'test-refresh',token_type:'bearer',expires_at:Math.floor(Date.now()/1000)+3600,user:{id:userId,email:'ui-test@example.invalid',aud:'authenticated',role:'authenticated',user_metadata:{full_name:'Test Researcher'}}}))},{userId})
  await page.route('https://*.supabase.co/**',async route=>{
   const req=route.request();const path=new URL(req.url()).pathname;const method=req.method();let result:unknown=[]
@@ -30,6 +30,10 @@ test(mode !== 'normal' ? `${mode} workspace enforces separate team and superviso
  })
  await page.goto('/dashboard');await expect(page.getByRole('heading',{name:'Let’s make progress, Test.'})).toBeVisible();await expect(page.getByRole('heading',{name:workspace.research_title})).toBeVisible()
  if(mode === 'viewer') {
+  await page.getByRole('link',{name:/^Tasks/}).last().click()
+  await expect(page.getByRole('heading',{name:'Member-owned task',exact:true})).toBeVisible()
+  await expect(page.getByRole('button',{name:/^Delete task /})).toHaveCount(0)
+  await expect(page.getByRole('button',{name:'Archive task',exact:true})).toHaveCount(0)
   await page.getByRole('link',{name:test.info().project.name==='mobile'?'Team':'Team members',exact:true}).last().click()
   await expect(page.getByRole('heading',{name:workspace.research_title})).toBeVisible()
   await expect(page.getByRole('button',{name:'Edit research title'})).toHaveCount(0)
@@ -53,6 +57,20 @@ test(mode !== 'normal' ? `${mode} workspace enforces separate team and superviso
  await page.getByRole('button',{name:'Create task',exact:true}).click();await page.getByLabel('Task title').fill('Compare forecasting baselines');await page.getByRole('combobox',{name:'Assignee',exact:true}).selectOption(userId);await page.getByRole('button',{name:'Create task',exact:true}).click();await expect(page.getByRole('dialog')).toHaveCount(0)
  const mobile=test.info().project.name==='mobile';await page.getByRole('link',{name:/^Tasks/}).last().click();await expect(page.getByRole('heading',{name:'Compare forecasting baselines'})).toBeVisible()
  await page.getByLabel('Status for Compare forecasting baselines').selectOption('In Progress');await expect(page.getByLabel('Status for Compare forecasting baselines')).toHaveValue('In Progress')
+ await page.getByRole('button',{name:'Delete task Compare forecasting baselines',exact:true}).click()
+ await page.getByRole('button',{name:'Cancel deletion',exact:true}).click()
+ expect(tasks[0].archived).toBe(false)
+ await page.getByRole('button',{name:'Delete task Compare forecasting baselines',exact:true}).click()
+ await page.getByRole('button',{name:'Delete task',exact:true}).click()
+ await expect(page.getByRole('heading',{name:'Compare forecasting baselines',exact:true})).toHaveCount(0)
+ expect(tasks).toHaveLength(1);expect(tasks[0].archived).toBe(true)
+ await page.getByRole('button',{name:'Archived / Trash',exact:true}).click()
+ await expect(page.getByRole('heading',{name:'Compare forecasting baselines',exact:true})).toBeVisible()
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true)
+ await page.getByRole('button',{name:'Restore task',exact:true}).click()
+ expect(tasks[0].archived).toBe(false);expect(tasks[0].status).toBe('In Progress')
+ await page.getByRole('button',{name:'Active tasks',exact:true}).click()
+ await expect(page.getByRole('heading',{name:'Compare forecasting baselines',exact:true})).toBeVisible()
  await page.screenshot({path:`test-results/tasks-${test.info().project.name}.png`,fullPage:true})
  await page.getByRole('link',{name:mobile?'Team':'Team members',exact:true}).last().click()
  for(const status of ['pending','accepted','expired'])await expect(page.getByText(`${status}@example.invalid`,{exact:true})).toBeVisible()

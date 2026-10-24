@@ -222,6 +222,7 @@ export default function WorkspaceView({
   const [taskDialog, setTaskDialog] = useState<Task | null | undefined>(
     undefined,
   );
+  const [deleteTask, setDeleteTask] = useState<Task | null>(null);
   const [phaseDialog, setPhaseDialog] = useState<Phase | null | undefined>(
     undefined,
   );
@@ -381,6 +382,14 @@ export default function WorkspaceView({
               ))}
           </select>
           {leader && (
+            <>
+            {!t.archived && <button
+              className="icon-button"
+              disabled={busy}
+              aria-label={`Delete task ${t.title}`}
+              title="Delete task (recoverable)"
+              onClick={() => setDeleteTask(t)}
+            ><Trash2 size={15} /></button>}
             <button
               className="icon-button"
               disabled={busy}
@@ -401,6 +410,7 @@ export default function WorkspaceView({
             >
               <Archive size={15} />
             </button>
+            </>
           )}
         </div>
       )}
@@ -804,18 +814,13 @@ export default function WorkspaceView({
                   </option>
                 ))}
               </select>
-              <button
-                className={`icon-button ${showArchived ? "selected" : ""}`}
-                aria-label={
-                  showArchived ? "Show active tasks" : "Show archived tasks"
-                }
-                title="Toggle archive"
-                onClick={() => setShowArchived(!showArchived)}
-              >
-                <Archive size={17} />
-              </button>
+              <Button variant="ghost" onClick={() => {
+                setShowArchived(!showArchived);
+                setStatus("All statuses"); setMemberFilter(""); setPriorityFilter(""); setPhaseFilter("");
+              }}>{showArchived ? "Active tasks" : "Archived / Trash"}</Button>
             </div>
           </div>
+          {showArchived && <p className="research-notice">Archived / Trash contains deleted and archived tasks. They are excluded from active progress. A leader can use Restore task to return them to work. Task details and linked research records are preserved.</p>}
           {!filtered.length ? (
             <Empty
               title={
@@ -1356,6 +1361,20 @@ export default function WorkspaceView({
           Choose Overview, Tasks, Research phases, Team members, or Settings
           from the navigation.
         </Empty>
+      )}
+      {deleteTask && leader && (
+        <Modal title="Delete task?" description="Recoverable deletion: the task will move to Archived / Trash." onClose={() => { if (!busy) setDeleteTask(null); }}>
+          <p>Delete “{deleteTask.title}” from active tasks?</p>
+          <p>Its details, audit history and linked research records will be preserved. You can restore it from Archived / Trash.</p>
+          <div className="collab-toolbar">
+            <Button disabled={busy} onClick={() => void mutate(async () => {
+              check(await supabase.from("rf_tasks").update({ archived: true })
+                .eq("workspace_id", w.id).eq("id", deleteTask.id).select("id").single());
+              setDeleteTask(null);
+            }, "Task deleted from active work; restore it from Archived / Trash")}>Delete task</Button>
+            <Button variant="outline" disabled={busy} onClick={() => setDeleteTask(null)}>Cancel deletion</Button>
+          </div>
+        </Modal>
       )}
       {taskDialog !== undefined && (
         <TaskForm

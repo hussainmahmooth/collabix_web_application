@@ -52,6 +52,23 @@ do $$ begin
  begin update public.rf_tasks set phase_id=current_setting('rf.test.other_phase')::uuid where id=current_setting('rf.test.task')::uuid; raise exception 'FAIL cross workspace phase'; exception when foreign_key_violation then null; end;
  begin update public.rf_tasks set workspace_id=current_setting('rf.test.other_workspace')::uuid where id=current_setting('rf.test.task')::uuid; raise exception 'FAIL workspace changed'; exception when others then if SQLERRM like 'FAIL%' then raise; end if; end;
 end $$;
+-- Recoverable task deletion uses the existing archive boundary.
+update public.rf_tasks set status='In Progress',archived=true where id=current_setting('rf.test.task')::uuid;
+do $$ begin
+ if not exists(select 1 from public.rf_tasks where id=current_setting('rf.test.task')::uuid and archived) then raise exception 'FAIL leader task delete'; end if;
+end $$;
+select set_config('request.jwt.claim.sub',current_setting('rf.test.member'),true);
+do $$ begin
+ begin
+  update public.rf_tasks set archived=false where id=current_setting('rf.test.task')::uuid;
+  if found then raise exception 'FAIL member task restore'; end if;
+ exception when others then if SQLERRM like 'FAIL%' then raise; end if; end;
+end $$;
+select set_config('request.jwt.claim.sub',current_setting('rf.test.leader'),true);
+update public.rf_tasks set archived=false where id=current_setting('rf.test.task')::uuid;
+do $$ begin
+ if not exists(select 1 from public.rf_tasks where id=current_setting('rf.test.task')::uuid and not archived and status='In Progress') then raise exception 'FAIL leader task restore preserves task'; end if;
+end $$;
 reset role;
 rollback;
 select 'PASS: workspace isolation, invitation binding, member permissions, approval boundary, audit, founding leader, cross-workspace relationships; fixtures rolled back' as result;
